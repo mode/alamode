@@ -384,6 +384,8 @@ var alamode = {
     }
   },
   
+  // Built with Google Maps Javascript API
+  // https://developers.google.com/maps/documentation/javascript/
   googleMap: function(o) {
     var id = alamode.makeId(10);
     
@@ -460,6 +462,8 @@ var alamode = {
     })
   },
   
+  // Built with Leaflet
+  // http://leaflet.github.io/Leaflet.heat/demo/
   leafletMap: function(o) {
     var id = alamode.makeId(10);
     
@@ -525,6 +529,8 @@ var alamode = {
     heatmapLayer.setData(d);
   },
   
+  // Built with Jason Davies' d3-cloud
+  // https://www.jasondavies.com/wordcloud/
   wordCloud: function(o) {
     var queryName = o["query_name"],
         words = o["word_column"],
@@ -584,6 +590,8 @@ var alamode = {
     }
   },
   
+  // Built with Jake Zatecky's d3-funnel
+  // http://jakezatecky.github.io/d3-funnel/
   funnel: function(o) {
     var id = alamode.makeId(10)
     
@@ -632,6 +640,8 @@ var alamode = {
     d3.select("#" + id).style("height",height + "px");
   },
   
+  // Buitl with NVD3 multibar horizontal bar chart
+  // http://nvd3-community.github.io/nvd3/ 
   horizontalBarChart: function(o) {
     
     var queryName = o["query_name"],
@@ -872,6 +882,8 @@ var alamode = {
     })();
   },
   
+  // Modified NVD3 bullet chart
+  // http://nvd3-community.github.io/nvd3/ 
   bulletChart: function(o) {
     
     var id = alamode.makeId(10);
@@ -942,6 +954,8 @@ var alamode = {
     })
   },
   
+  // Modified from Kerry Rodden's "sequence sunburst"
+  // https://bl.ocks.org/kerryrodden/7090426
   sunburstChart: function(o) {
     var id = alamode.makeId(10);
     
@@ -1304,6 +1318,8 @@ var alamode = {
     };
   },
   
+  // Modified from Mike Bostock's "Choropleth"
+  // https://bl.ocks.org/mbostock/4060606
   countyChoropleth: function(o) {
     var id = alamode.makeId(10);
     
