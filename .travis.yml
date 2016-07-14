@@ -1,0 +1,24 @@
+script:
+- npm install
+- gulp
+before_deploy: git fetch --tags
+deploy:
+  - provider: s3
+    access_key_id: AKIAJYC77LORWDOHWBGA
+    secret_access_key:
+      secure: vjJkUH67KK2+WpxQTGiy4OCMZiCw0dueSyeu1+/83eeNhJA59IG3Ter515PNUjMEwLDYdeQwhbqbkDmL2MieiZ1dmJG4gA7xTViyrg8sQQ5TA3HTN+rRl+q55aSLmOIkwC0LlSYelvFS+N3QzJZcd45ZV4oGU+IMXdeqzl08TVglMcQLtJxgazk1HHhk+AKZnQCBBiMoBOiMrFH3750mCkqqHiy+/Qn+DPFgFmCYZL+ztm3lYSGT5xSkSAz9f5HcMRepJwPnrXzzkcMCkbICEwKsmnbNliIETfHjt31bGsp8NcKoRNHHjufizITDgG5Oy+sRZnSREdnCPm60/SHQ6FD8hhj/XyLRRYkqchqHDd371lask4APlYl/iXxEFZ/VJ6keo2nLhymXUtuQdLX6mDmUBQMLDp0g1LN3Kc1JGeZq3Bs4gLtjojWXn09Mzq7wl7AFOJVrqWFE0wKO/55ojEe2DDNB/VtOTILstrRMIIS+N3B75cqYexNJO2NlbyOLkQfqgE65Z4+1yylDiyMZMzLH/0DBgYvu/kVLD4mSEzzbzyMyJ206tGQpr5/YzUnqKGhti3Uz5lHLnDVYdMITYhg3Zr8Dk4+oZja0mtSF8e60wW0tq8NWxQ9s9MkYzBu5XYvXpTO9PI3kitTYMVk42bfMDXMyq4RMuYyLZBE3Odc=
+    bucket: "mode-alm"
+    acl: "public_read"
+    skip_cleanup: true
+    local_dir: build/s3
+    on:
+      tags: true
+  - provider: releases
+    api_key:
+      secure: tyf3PeqQ3w/J4l7SIvP3iyhxD1JCdNuhr5FnvPMtTBQwE3VhnPfPOAD1/BZ8yHTHtHALgV5N7aYsqr/VW4RypKNH6njBNkbR14HbxaU8WZY4zlE6upqQfR6MrlHecZRlIFALfaSgcujd7QCy9qMgCUy7yIg/FwoiQIpcg76VGv8qcYmGlU8Yl+IZBmKGNP42qoAlo+vEqC6e2VGuSXfxNt99Tc0TcdDy27fSUxFurMQKykfAagKhKvpIhu6r8fCYbJNtK49G5j2F/+9ULL2DADm46WsUGM7THeISNY/ZqlAR7XNeo5e6ppTX8rhDkKrjNM3iav1n6RpnW6uE/bbbKIWoMkkdzAQCmCFxngrRG2pOoTfMdcgUOePRb+uKXP81+laTVB135LoKdkeYOWcdPyNC4Am2bU3ZxkRJgVMewHVqd64/3KYQoqST17PU66eABAO0VsaC/g+mx584DDrZ2JoliXxCzITdQebDTZxt1gq4Gi9CjQ6U8BE9EOpXcoCQYQigBLxV0NhLwKcMiL7S8x3V4U+EuWBlmhrFV0qVv5lFXXFbVwvu1/TOzKBTv4w1nVU9YeJITqe1QnWkNcpfsKASk6NYCaFmnHx9HnwXB8wofB8xr9o0e9nCOLJHNFprT0bJzpREzMShavrNshahDT/+a6aG66aE7Jmq2swTbz4=
+    file:
+      - build/gh/bundle.js
+      - build/gh/bundle.min.js
+    skip_cleanup: true
+    on:
+      tags: true

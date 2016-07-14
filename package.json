@@ -1,0 +1,25 @@
+{
+  "name": "alamode.js",
+  "version": "0.1.0",
+  "description": "Visualizations for Mode reports",
+  "author": "Benn Stancil",
+  "main": "alamode.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mode/alamode.git"
+  },
+  "keywords": [
+    "mode"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mode/alamode/issues"
+  },
+  "homepage": "https://community.modeanalytics.com/gallery",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.4",
+    "pump": "^1.0.1"
+  }
+}
