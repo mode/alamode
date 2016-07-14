@@ -36,6 +36,70 @@ var alamode = {
     return "." + id;
   },
 
+  addLinksToTables: function(o) {
+    var tableId = "#" + o["table_id"],
+        linkColumns = o["link_columns"],
+        linkURLs = o["link_urls"],
+        queryName = o["query_name"];
+
+    var linkFormat = [];
+
+    linkColumns.forEach(function(l,i) {
+      linkFormat.push( { column: l, link_string: linkURLs[i] });
+    })
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName);
+
+    var colIndex = {};
+
+    columns.forEach(function(c,i) {
+      colIndex[c.name] = i;
+
+      if (c.name.slice(-6) == "__link") {
+        linkFormat.push( { column: c.name, link_string: "{{" + c.name + "}}" } );
+      }
+    })
+
+    setTimeout(function(){
+      drawLinks(linkFormat)
+    },1000)
+
+    $(tableId).mousemove(function() {
+      drawLinks(linkFormat)
+    })
+
+    function drawLinks(linkFormat) {
+
+      var tableDiv = $(tableId + " table"),
+          rows = tableDiv.find("tr");
+
+      rows.each(function() {
+        var cells = $(this).find("td");
+
+        linkFormat.forEach(function(l) {
+          var columnToShow = colIndex[l.column],
+              cellContent = cells.eq(columnToShow).text();
+              url = l.link_string;
+
+          while (url.indexOf("{{") != - 1) {
+            var chars = url.length,
+                start = url.indexOf("{{"),
+                end = url.substring(start+2,chars).indexOf("}}"),
+                cName = url.substring(start+2,start+end+2),
+                full = url.substring(start,start+end+4),
+                col = colIndex[cName],
+                content = cells.eq(col).text();
+
+            url = url.replace(full,content);
+          }
+
+          cells.eq(columnToShow).html("<a target='_blank' href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+        })
+      })
+    }
+  },
+
   customChartColors: function(o) {
     var charts = o["charts"],
         colors = o["colors"];
