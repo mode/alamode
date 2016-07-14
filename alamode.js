@@ -99,7 +99,7 @@ var alamode = {
       })
     }
   },
-
+  
   customChartColors: function(o) {
     var charts = o["charts"],
         colors = o["colors"];
