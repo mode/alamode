@@ -17,8 +17,10 @@ deploy:
     api_key:
       secure: tyf3PeqQ3w/J4l7SIvP3iyhxD1JCdNuhr5FnvPMtTBQwE3VhnPfPOAD1/BZ8yHTHtHALgV5N7aYsqr/VW4RypKNH6njBNkbR14HbxaU8WZY4zlE6upqQfR6MrlHecZRlIFALfaSgcujd7QCy9qMgCUy7yIg/FwoiQIpcg76VGv8qcYmGlU8Yl+IZBmKGNP42qoAlo+vEqC6e2VGuSXfxNt99Tc0TcdDy27fSUxFurMQKykfAagKhKvpIhu6r8fCYbJNtK49G5j2F/+9ULL2DADm46WsUGM7THeISNY/ZqlAR7XNeo5e6ppTX8rhDkKrjNM3iav1n6RpnW6uE/bbbKIWoMkkdzAQCmCFxngrRG2pOoTfMdcgUOePRb+uKXP81+laTVB135LoKdkeYOWcdPyNC4Am2bU3ZxkRJgVMewHVqd64/3KYQoqST17PU66eABAO0VsaC/g+mx584DDrZ2JoliXxCzITdQebDTZxt1gq4Gi9CjQ6U8BE9EOpXcoCQYQigBLxV0NhLwKcMiL7S8x3V4U+EuWBlmhrFV0qVv5lFXXFbVwvu1/TOzKBTv4w1nVU9YeJITqe1QnWkNcpfsKASk6NYCaFmnHx9HnwXB8wofB8xr9o0e9nCOLJHNFprT0bJzpREzMShavrNshahDT/+a6aG66aE7Jmq2swTbz4=
     file:
-      - build/gh/bundle.js
-      - build/gh/bundle.min.js
+      - build/gh/alamode.js
+      - build/gh/alamode.min.js
+      - build/gh/alamode.css
+      - build/gh/alamode.min.css
     skip_cleanup: true
     on:
       tags: true
