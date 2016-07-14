@@ -2,7 +2,7 @@
   "name": "alamode.js",
   "version": "0.1.0",
   "description": "Visualizations for Mode reports",
-  "author": "Benn Stancil",
+  "author": "Benn Stancil <bennstancil@gmail.com>",
   "main": "alamode.js",
   "repository": {
     "type": "git",
