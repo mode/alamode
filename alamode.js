@@ -456,6 +456,7 @@ var alamode = {
     var latColumn = o["lat_column"],
         lngColumn = o["lng_column"],
         queryName = o["query_name"],
+        apiKey = o["google_maps_api_key"],
         // Optional
         title = o["title"] || queryName,
         labelColumn = o["label_column"],
@@ -479,7 +480,7 @@ var alamode = {
       .attr("class","mode-google-map")
       .attr("id",id)
         
-    jQuery.getScript("https://maps.googleapis.com/maps/api/js", function() {
+    jQuery.getScript("https://maps.googleapis.com/maps/api/js?key=" + apiKey, function() {
   
       initMap()
   
@@ -492,7 +493,6 @@ var alamode = {
         };
         
         var map = new google.maps.Map(document.getElementById(id), myOptions );
-        
     
         data.forEach(function(d) {
           
@@ -505,7 +505,6 @@ var alamode = {
             label = "";
           }
           
-          console.log(label)
           var marker = new google.maps.Marker({
             position: {lat:lat, lng:lng},
             map: map,
@@ -765,7 +764,7 @@ var alamode = {
       chart.yAxis
           .tickFormat(d3.format(',.2f'));
 
-      d3.select(htmlElement + " svg")
+      d3.select(uniqContainerClass + " svg")
           .datum(nvData)
           .call(chart);
 
