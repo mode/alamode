@@ -836,16 +836,16 @@ var alamode = {
         
           svg.append("rect")
               .attr("x",xPoint + xTrans)
-              .attr("y",yTrans - 10)
+              .attr("y",yTrans - 5)
               .attr("width",1)
               .attr("class","flag")
-              .attr("height",yPoint + 10)
+              .attr("height",yPoint + 5)
               .attr("fill","#ff8f53");
         
           svg.append("circle")
               .data([c])
               .attr("cx",xPoint + xTrans)
-              .attr("cy",yTrans - 10)
+              .attr("cy",yTrans - 5)
               .attr("class","flag")
               .attr("r",5)
               .attr("fill","#ff8f53")
