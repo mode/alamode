@@ -294,7 +294,6 @@ var alamode = {
         height = o["height"];
     
     if (chart.slice(0,6) == "python") {
-      $("#" + chart + " .chart-content").css("height",height)
       $("#" + chart + " .mode-python").css("height",height)
       $("#" + chart + " .mode-python").css("max-height",height)
       $("#" + chart + " img").css("max-height",height)
