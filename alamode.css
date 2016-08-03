@@ -154,3 +154,7 @@
   stroke: #fff;
   stroke-linejoin: round;
 }
+
+.mode-pivot-table {
+  padding: 10px;
+}

@@ -193,8 +193,6 @@ var alamode = {
   
     var columnsWithSums = getColumns(selectedColumns),
         totals = makeSums(columnsWithSums);
-        
-
   
     function getColumns(selectedColumns) {
       
@@ -1379,7 +1377,7 @@ var alamode = {
       return root;
     };
   },
-  
+
   // Modified from Mike Bostock's "Choropleth"
   // https://bl.ocks.org/mbostock/4060606
   countyChoropleth: function(o) {
@@ -1449,6 +1447,73 @@ var alamode = {
           .attr("class", "mode-county-chorolpleth-states")
           .attr("d", path);
     }
-  }
+  },
 
+  // Modified from Nicolas Kruchten's PivotTable.js
+  // http://nicolas.kruchten.com/pivottable/
+  piovtTable: function(o) {
+    var id = alamode.makeId(10);
+
+    var queryName = o["query_name"],
+        defaultColumns = o["default_columns"],
+        defaultRows = o["default_rows"],
+        defaultValues = o["default_values"],
+        editable = o["editable"],
+        // Optional
+        aggregator = o["aggregate_function"] || "Count",
+        selectedRenderer = o["pivot_table_type"] || "Table",
+        title = o["default_column_value"] || queryName,
+        htmlElement = o["html_element"] || "body";
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName),
+        columnNames = _.map(columns,"name");
+
+    var uniqContainerClass = alamode.addContainerElement(htmlElement);
+
+    d3.select(uniqContainerClass)
+      .append("div")
+      .attr("class","mode-graphic-title")
+      .text(title)
+
+    d3.select(uniqContainerClass)
+      .append("div")
+      .attr("class","mode-pivot-table")
+      .attr("id",id)
+
+    var transformedData = [];
+
+    transformedData.push(columnNames);
+
+    data.forEach(function(d) {
+      var row = []
+      columnNames.forEach(function(c) { row.push(d[c]); })
+      transformedData.push(row)
+    })
+
+    if (editable) {
+      $("#" + id).pivotUI(
+        transformedData, {
+          cols: defaultColumns,
+          rows: defaultRows,
+          aggregatorName: aggregator,
+          vals: [defaultValues],
+          rendererName: selectedRenderer
+        }
+      )
+    } else {
+      var utils = $.pivotUtilities;
+      var render =  utils.renderers[selectedRenderer];
+      var agg =  utils.aggregators[aggregator];
+
+      $("#" + id).pivot(
+        transformedData, {
+          cols: defaultColumns,
+          rows: defaultRows,
+          aggregator: agg([defaultValues]),
+          renderer: render
+        }
+      )
+    }
+  }
 }
