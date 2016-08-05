@@ -1451,7 +1451,7 @@ var alamode = {
 
   // Modified from Nicolas Kruchten's PivotTable.js
   // http://nicolas.kruchten.com/pivottable/
-  piovtTable: function(o) {
+  pivotTable: function(o) {
     var id = alamode.makeId(10);
 
     var queryName = o["query_name"],
