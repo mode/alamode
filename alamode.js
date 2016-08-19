@@ -1430,7 +1430,7 @@ var alamode = {
         .range(colors);
 
     queue()
-        .defer(d3.json, "https://mode.github.io/blog/2014-01-16-football-hometowns/counties.json")
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-json/counties.json")
         .await(ready);
 
     function ready(error, us) {
