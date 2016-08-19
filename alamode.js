@@ -1430,7 +1430,7 @@ var alamode = {
         .range(colors);
 
     queue()
-        .defer(d3.json, "https://dl.dropboxusercontent.com/s/sh04tjwairb7vgk/counties.json")
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-json/counties.json")
         .await(ready);
 
     function ready(error, us) {
