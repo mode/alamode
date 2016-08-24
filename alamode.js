@@ -43,6 +43,7 @@ var alamode = {
         queryName = o["query_name"];
 
     var linkFormat = [];
+    var colIndex = {};
 
     linkColumns.forEach(function(l,i) {
       linkFormat.push( { column: l, link_string: linkURLs[i] });
@@ -51,14 +52,14 @@ var alamode = {
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName);
 
-    var colIndex = {};
+    var table = $(tableId + " .js-header-table"),
+        headers = table.find("th"),
+        columnIndex = 0;
 
-    columns.forEach(function(c,i) {
-      colIndex[c.name] = i;
-
-      if (c.name.slice(-6) == "__link") {
-        linkFormat.push( { column: c.name, link_string: "{{" + c.name + "}}" } );
-      }
+    headers.each(function() {
+      text = $(this).find(".axel-table-header-label").text()
+      columnIndex = $(this).attr("data-axel-column")
+      colIndex[text] = columnIndex - 1
     })
 
     setTimeout(function(){
@@ -74,28 +75,30 @@ var alamode = {
       var tableDiv = $(tableId + " table"),
           rows = tableDiv.find("tr");
 
-      rows.each(function() {
-        var cells = $(this).find("td");
+      rows.each(function(i) {
+        if (i > 0) {
+          var cells = $(this).find("td");
 
-        linkFormat.forEach(function(l) {
-          var columnToShow = colIndex[l.column],
-              cellContent = cells.eq(columnToShow).text();
-              url = l.link_string;
+          linkFormat.forEach(function(l) {
+            var columnToShow = colIndex[l.column],
+                cellContent = cells.eq(columnToShow).text();
+                url = l.link_string;
 
-          while (url.indexOf("{{") != - 1) {
-            var chars = url.length,
-                start = url.indexOf("{{"),
-                end = url.substring(start+2,chars).indexOf("}}"),
-                cName = url.substring(start+2,start+end+2),
-                full = url.substring(start,start+end+4),
-                col = colIndex[cName],
-                content = cells.eq(col).text();
+            while (url.indexOf("{{") != - 1) {
+              var chars = url.length,
+                  start = url.indexOf("{{"),
+                  end = url.substring(start+2,chars).indexOf("}}"),
+                  cName = url.substring(start+2,start+end+2),
+                  full = url.substring(start,start+end+4),
+                  col = colIndex[cName],
+                  content = data[i - 1][cName];
 
-            url = url.replace(full,content);
-          }
+              url = url.replace(full,content);
+            }
 
-          cells.eq(columnToShow).html("<a target='_blank' href='" + encodeURI(url) + "'>" + cellContent + "</a>")
-        })
+            cells.eq(columnToShow).html("<a target='_blank' href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+          })
+        }
       })
     }
   },
