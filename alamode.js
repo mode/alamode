@@ -781,10 +781,10 @@ var alamode = {
         orientations = o["orientations"],
         values = o["comment_values"],
         comments = o["comments"];
-    
+
     var data = alamode.getDataFromQuery(queryName);
     var pointNumbers = [];
-    
+
     comments.forEach(function(c,i) {
       var match = _.filter(data, function(d){ return d[xAxis] == values[i]; });
       if (match.length != 0) {
@@ -792,24 +792,24 @@ var alamode = {
       } else {
         pointNumber = -1
       }
-      
+
       pointNumbers.push(pointNumber)
     })
-    
+
     function drawComments() {
-      
+
       comments.forEach(function(c,i) {
-        
+
         var pointNumber = pointNumbers[i],
             orientation = orientations[i],
             value = values[i];
-  
+
         var tip = d3.tip()
             .attr("class","d3-tip")
             .style("z-index",100)
             .offset([-10, 0])
             .html(function(d) { return d; });
-      
+
         var translate = $(chart).find("g.nvd3.nv-wrap").attr("transform"),
             openPos = translate.indexOf("("),
             closePos = translate.indexOf(")"),
@@ -817,7 +817,7 @@ var alamode = {
         
         var xTrans = +translate.slice(openPos+1,commaPos),
             yTrans = +translate.slice(commaPos+1,closePos);
-      
+
         if (pointNumber != -1 && orientation == "v") {
         
           var pointTranlate = $(chart).find(".nv-point.nv-point-" + pointNumber).attr("transform"),
@@ -852,49 +852,53 @@ var alamode = {
               .attr("fill","#ff8f53")
               .on('mouseover', tip.show)
               .on('mouseout', tip.hide);
-      
-        } else if (orientation == "h") {
-          if (commentAxis == "left") { y = "1"; }
-          else if (commentAxis == "right") { y = "2"; }
-          else { y = ""; }
-        
+
+        } else if (orientation == "h" || orientation == "h-left" || orientation == "h-right") {
+
+          if (orientation == "h") {
+            y = "";
+          } else if ("h-left") {
+            y = "1";
+          } else {
+            y = "2";
+          }
+
           var ticks = $(chart).find("g.nv-y" + y + ".nv-axis").find(".tick");
-        
+
           ticks.each(function(t) {
-          
+
+            if (orientation == "h-right") {
+              lineLength = +$(chart).find("g.nv-y1.nv-axis").find(".tick").first().find("line").attr("x2");
+            } else {
+              lineLength = +$(this).find("line").attr("x2");
+            }
+
             tickTrans = $(this).attr("transform");
             tickClosePos = tickTrans.indexOf(")"),
             tickCommaPos = tickTrans.indexOf(",");
-          
+
             if (t == 0) {
-  
-              // Get line length and y of first tick          
-              if (commentAxis == "right") {
-                lineLength = +$(chart).find("g.nv-y1.nv-axis").find(".tick").first().find("line").attr("x2");
-              } else {
-                lineLength = +$(this).find("line").attr("x2");  
-              }
             
               yTrans1 = +tickTrans.slice(tickCommaPos+1,tickClosePos);
               yVal1 = +$(this).find("text").text().replace(",","");
             
             } else if (t == 1) {
-            
+
               // Get y of second tick;
               yTrans2 = +tickTrans.slice(tickCommaPos+1,tickClosePos);
               yVal2 = +$(this).find("text").text().replace(",","");
             }
           })
-                  
+
           var scalar = (yTrans2 - yTrans1)/(yVal2 - yVal1),
               intercept = yTrans2 - (yVal2 * scalar);
-            
-          var lineLocation = intercept + (c.value * scalar);
-          
+
+          var lineLocation = intercept + (value * scalar);
+
           var svg = d3.select(chart + " .nvd3svg");
-        
+
           svg.call(tip);
-        
+
           svg.append("rect")
               .attr("x",xTrans)
               .attr("y",lineLocation + yTrans)
@@ -902,7 +906,7 @@ var alamode = {
               .attr("height",1)
               .attr("class","flag")
               .attr("fill","#ff8f53");
-        
+
           svg.append("circle")
               .data([c])
               .attr("cx",lineLength + xTrans + 10)
@@ -912,7 +916,7 @@ var alamode = {
               .attr("fill","#ff8f53")
               .on('mouseover', tip.show)
               .on('mouseout', tip.hide);
-  
+
         }
       })
     }
