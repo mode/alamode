@@ -52,16 +52,6 @@ var alamode = {
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName);
 
-    var table = $(tableId + " .js-header-table"),
-        headers = table.find("th"),
-        columnIndex = 0;
-
-    headers.each(function() {
-      text = $(this).find(".axel-table-header-label").text()
-      columnIndex = $(this).attr("data-axel-column")
-      colIndex[text] = columnIndex - 1
-    })
-
     setTimeout(function(){
       drawLinks(linkFormat)
     },1000)
@@ -73,10 +63,19 @@ var alamode = {
     function drawLinks(linkFormat) {
 
       var tableDiv = $(tableId + " table"),
-          rows = tableDiv.find("tr");
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = tableHeader.find("th"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        columnIndex = $(this).attr("data-axel-column")
+        colIndex[text] = columnIndex - 1
+      })
 
       rows.each(function(i) {
-        if (i > 0) {
+        if (i > 0 && i <= data.length) {
           var cells = $(this).find("td");
 
           linkFormat.forEach(function(l) {
