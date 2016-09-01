@@ -67,7 +67,7 @@ var alamode = {
           headers = tableHeader.find("th"),
           rows = tableDiv.find("tr"),
           columnIndex = 0;
-
+      
       headers.each(function() {
         text = $(this).find(".axel-table-header-label").text()
         columnIndex = $(this).attr("data-axel-column")
@@ -856,20 +856,20 @@ var alamode = {
 
           if (orientation == "h") {
             y = "";
-          } else if ("h-left") {
-            y = "1";
-          } else {
-            y = "2";
+          } else if ("h-left") { 
+            y = "1"; 
+          } else { 
+            y = "2"; 
           }
 
           var ticks = $(chart).find("g.nv-y" + y + ".nv-axis").find(".tick");
-
+        
           ticks.each(function(t) {
-
+            
             if (orientation == "h-right") {
               lineLength = +$(chart).find("g.nv-y1.nv-axis").find(".tick").first().find("line").attr("x2");
             } else {
-              lineLength = +$(this).find("line").attr("x2");
+              lineLength = +$(this).find("line").attr("x2");  
             }
 
             tickTrans = $(this).attr("transform");
@@ -1520,6 +1520,39 @@ var alamode = {
           renderer: render
         }
       )
+    }
+  },
+
+  pieChartLabels: function(o) {
+    var showAll = o["show_all_labels"],
+        chartId = o["chart_id"],
+        chart = $("#" + chartId);
+
+    var lookup = {};
+
+    setInterval(function() {
+      draw(chart, showAll)
+    },300)
+
+    function draw(chart, showAll) {
+
+      chart.find(".nv-legendWrap .nv-series text").each(function(i) {
+        var seriesName = $(this).text()
+
+        chart.find(".nv-pieWrap .nv-pieLabels text").each(function(j) {
+          var key = i + "-" + j;
+              text = $(this).text();
+
+          if (i == j && text != "" && text != lookup[key]) {
+            text = seriesName + " - " + text;
+          } else if (i == j && showAll && text != lookup[key]) {
+            text = seriesName
+          }
+
+          lookup[key] = text
+          $(this).text(text)
+        })
+      })
     }
   }
 }
