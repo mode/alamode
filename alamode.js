@@ -76,7 +76,8 @@ var alamode = {
 
       rows.each(function(i) {
         if (i > 0 && i <= data.length) {
-          var cells = $(this).find("td");
+          var cells = $(this).find("td"),
+              rowKey = cells.first().attr("data-axel-rowkey");
 
           linkFormat.forEach(function(l) {
             var columnToShow = colIndex[l.column],
@@ -90,7 +91,7 @@ var alamode = {
                   cName = url.substring(start+2,start+end+2),
                   full = url.substring(start,start+end+4),
                   col = colIndex[cName],
-                  content = data[i - 1][cName];
+                  content = data[rowKey][cName];
 
               url = url.replace(full,content);
             }
