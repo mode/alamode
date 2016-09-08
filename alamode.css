@@ -158,3 +158,60 @@
 .mode-pivot-table {
   padding: 10px;
 }
+
+.mode-force-directed-graph {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.mode-force-directed-graph-node {
+  stroke: #394242;
+  stroke-width: 1px;
+}
+
+.mode-force-directed-graph-link {
+  fill: none;
+  stroke: #a4a5a9;
+}
+
+.mode-force-directed-graph-tooltip {
+  line-height: 1;
+  font-weight: normal;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+.mode-network-matrix {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.mode-network-matrix-background {
+  fill: #eee;
+}
+
+.mode-network-matrix-line {
+  stroke: #fff;
+}
+
+.mode-network-matrix-row-text.active,
+.mode-network-matrix-column-text.active {
+  fill: red;
+}
+
+.mode-network-matrix-order-picker {
+  text-align: center;
+}
+
+.mode-hive-link {
+  fill: none;
+  stroke-width: 1px;
+}
+
+.mode-hive-axis,
+.mode-hive-node {
+  stroke: #394242;
+  stroke-width: 1px;
+}
