@@ -535,6 +535,7 @@ var alamode = {
         queryName = o["query_name"],
         // Optional
         title = o["title"] || queryName,
+        height = o["height"] || 400,
         htmlElement= o["html_element"] || "body",
         centerLat = o["center_lat"] || 39.5,
         centerLng = o["center_lng"] || -98.35,
@@ -547,14 +548,20 @@ var alamode = {
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
       
     d3.select(uniqContainerClass)
+      .style("height",height + "px")
       .append("div")
       .attr("class","mode-graphic-title")
       .text(title)
-    
+
+    var mapHeight = height - $(uniqContainerClass + ".mode-graphic-title").height(),
+        mapWidth = $(uniqContainerClass).width();
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-leaflet-map")
       .attr("id",id)
+      .style("height",mapHeight + "px")
+      .style("width",mapWidth + "px")
 
     var baseLayer = L.tileLayer(
       'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -666,7 +673,7 @@ var alamode = {
         title = o["title"] || queryName,
         height = o["height"] || "300",
         width = o["width"] || "500";
-    
+
     var data = alamode.getDataFromQuery(queryName);
     
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
@@ -675,14 +682,14 @@ var alamode = {
         .append("div")
         .attr("class","mode-graphic-title")
         .text(title)
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-funnel")
         .attr("id",id)
         .style("width",width + "px")
         .style("height",(height - 20) + "px");
-  
+
     var funnelData = [];
 
     data.forEach(function(d) {

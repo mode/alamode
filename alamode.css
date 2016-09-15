@@ -68,10 +68,8 @@
 
 /*Leaflet map*/
 .mode-leaflet-map {
-  height: 100%;
-  width: 100%;
+  width: 95%;
   max-width: 1162px;
-  position: absolute;
 }
 
 /*Wordcloud*/
