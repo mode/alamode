@@ -1394,19 +1394,23 @@ var alamode = {
         countyColumn = o["county_id_column"],
         valueColumn = o["value_column"],
         // Optional
+        width = o["width"] || 950,
+        height = o["height"] || width/1.9,
         title = o["title"] || queryName,
         valueRange = o["color_range"],
         colors = o["colors"] || ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
         htmlElement = o["html_element"] || "body";
     
     var data = alamode.getDataFromQuery(queryName);
-    
-    var width = 950,
-        height = 500;
 
     var rateById = d3.map();
 
-    var path = d3.geo.path();
+    var projection = d3.geoAlbersUsa()
+        .scale(width)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geoPath()
+        .projection(projection);
     
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
     
@@ -1419,6 +1423,7 @@ var alamode = {
         .append("div")
         .attr("class","mode-county-chorolpleth")
       .append("svg")
+        .attr("id","mode-county-chorolpleth-" + id)
         .attr("width",width)
         .attr("height",height);
 
@@ -1441,15 +1446,19 @@ var alamode = {
         .await(ready);
 
     function ready(error, us) {
-      svg.append("g")
+
+      d3.select("#mode-county-chorolpleth-" + id)
+          .append("g")
           .attr("class", "mode-county-chorolpleth-counties")
-        .selectAll("path")
+        .selectAll(".mode-county-chorolpleth-counties" + id)
           .data(topojson.feature(us, us.objects.counties).features)
         .enter().append("path")
+          .attr("class","mode-county-chorolpleth-counties-" + id)
           .attr("fill", function(d) { return quantize(rateById.get(d.id)); })
           .attr("d", path);
 
-      svg.append("path")
+      d3.select("#mode-county-chorolpleth-" + id)
+          .append("path")
           .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
           .attr("class", "mode-county-chorolpleth-states")
           .attr("d", path);
