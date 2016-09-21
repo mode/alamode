@@ -153,6 +153,42 @@
   stroke-linejoin: round;
 }
 
+/*World choropleth*/
+.mode-world-chorolpleth {
+  text-align: center;
+}
+
+.mode-world-chorolpleth-legend {
+  text-align: center;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+}
+
+.mode-world-chorolpleth-countries-base {
+  fill: #C3CBCB;
+}
+
+.mode-world-chorolpleth-countries:hover {
+  fill: red;
+}
+
+.mode-world-chorolpleth-boundaries {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+}
+
+.mode-world-chorolpleth-tooltip {
+  line-height: 1;
+  font-weight: normal;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/*Pivot tables*/
 .mode-pivot-table {
   padding: 10px;
 }

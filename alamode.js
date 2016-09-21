@@ -1472,6 +1472,107 @@ var alamode = {
     }
   },
 
+  // Modified from Vida World Map
+  // https://vida.io/gists/TWNbJrHvRcR3DeAZq
+  worldChoropleth: function(o) {
+    var id = alamode.makeId(10);
+
+    var queryName = o["query_name"],
+        countryColumn = o["country_column"],
+        valueColumn = o["value_column"],
+        // Optional
+        width = o["width"] || 950,
+        height = o["height"] || width*.8,
+        title = o["title"] || queryName,
+        valueRange = o["color_range"],
+        colors = o["colors"] || ["#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
+        htmlElement = o["html_element"] || "body";
+
+    var data = alamode.getDataFromQuery(queryName);
+
+    var rateById = d3.map();
+
+    var projection = d3.geo.mercator()
+        .scale((width + 1) / 2 / Math.PI)
+        .translate([width / 2, (height / 2) + (height * .1) ])
+        .precision(.1);
+
+    var path = d3.geoPath()
+        .projection(projection);
+
+    var uniqContainerClass = alamode.addContainerElement(htmlElement);
+
+    d3.select(uniqContainerClass)
+        .append("div")
+        .attr("class","mode-graphic-title")
+        .text(title)
+
+    d3.select(uniqContainerClass)
+        .append("div")
+        .attr("class","mode-world-chorolpleth-legend")
+        .attr("id","mode-world-chorolpleth-legend-" + id)
+        .text("Hover over a country to see details")
+
+    svg = d3.select(uniqContainerClass)
+        .append("div")
+        .attr("class","mode-world-chorolpleth")
+      .append("svg")
+        .attr("id","mode-world-chorolpleth-" + id)
+        .attr("width",width)
+        .attr("height",height);
+
+    data.forEach( function(d) {
+      rateById.set(d[countryColumn],+d[valueColumn]);
+    })
+
+    if (!valueRange) {
+      colorDomain = d3.extent(data, function(d) { return d[valueColumn]; });
+    } else {
+      colorDomain = valueRange;
+    }
+
+    var quantize = d3.scale.quantize()
+        .domain(colorDomain)
+        .range(colors);
+
+    queue()
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json")
+        .await(ready);
+
+    function ready(error, world) {
+
+      d3.select("#mode-world-chorolpleth-" + id)
+          .append("g")
+          .attr("class", "mode-world-chorolpleth-countries-base")
+        .selectAll(".mode-world-chorolpleth-countries")
+          .data(topojson.feature(world, world.objects.countries).features)
+        .enter().append("path")
+          .attr("class","mode-world-chorolpleth-countries")
+          .attr("fill", function(d) { return quantize(rateById.get(d.properties.name)); })
+          .attr("d", path)
+          .on("mouseover",function(d) {
+            var country = d.properties.name;
+
+            if (rateById.get(country)) {
+              value = rateById.get(country);
+            } else {
+              value = "--"
+            }
+
+            d3.select("#mode-world-chorolpleth-legend-" + id).text(country + ": " + value)
+          })
+          .on("mouseout",function(d) {
+            d3.select("#mode-world-chorolpleth-legend-" + id).text("Hover over a country to see details")
+          })
+
+      d3.select("#mode-world-chorolpleth-" + id)
+          .append("path")
+          .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+          .attr("class", "mode-world-chorolpleth-boundaries")
+          .attr("d", path);
+    }
+  },
+
   // Modified from Nicolas Kruchten's PivotTable.js
   // http://nicolas.kruchten.com/pivottable/
   pivotTable: function(o) {
