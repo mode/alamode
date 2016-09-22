@@ -1491,6 +1491,7 @@ var alamode = {
     var queryName = o["query_name"],
         countryColumn = o["country_column"],
         valueColumn = o["value_column"],
+        code = o["country_code_type"], // Options: name, iso_code_numeric, iso_code_alpha_2, iso_code_alpha_3
         // Optional
         width = o["width"] || 950,
         height = o["height"] || width*.8,
@@ -1547,7 +1548,7 @@ var alamode = {
         .range(colors);
 
     queue()
-        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json")
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-alamode/world.json")
         .await(ready);
 
     function ready(error, world) {
@@ -1559,13 +1560,13 @@ var alamode = {
           .data(topojson.feature(world, world.objects.countries).features)
         .enter().append("path")
           .attr("class","mode-world-chorolpleth-countries")
-          .attr("fill", function(d) { return quantize(rateById.get(d.properties.name)); })
+          .attr("fill", function(d) { return quantize(rateById.get(d.properties[code])); })
           .attr("d", path)
           .on("mouseover",function(d) {
             var country = d.properties.name;
 
-            if (rateById.get(country)) {
-              value = rateById.get(country);
+            if (rateById.get(d.properties[code])) {
+              value = rateById.get(d.properties[code]);
             } else {
               value = "--"
             }
