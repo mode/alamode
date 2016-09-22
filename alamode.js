@@ -1240,14 +1240,25 @@ var alamode = {
           .style("visibility", "hidden");
     
       d3.selectAll("path").on("mouseover", null);
-    
-      d3.selectAll("path")
-          .transition()
-          .duration(1000)
-          .style("opacity", 1)
-          .each("end", function() {
-            d3.select(this).on("mouseover", mouseover);
-          });
+
+      // Compatibility for d3 v3 and v4
+      if (d3.version.split(".")[0] == 4) {
+        d3.selectAll("path")
+            .transition()
+            .duration(300)
+            .style("opacity", 1)
+            .on("end", function() {
+              d3.select(this).on("mouseover", mouseover);
+            })
+      } else {
+        d3.selectAll("path")
+            .transition()
+            .duration(300)
+            .style("opacity", 1)
+            .each("end", function() {
+              d3.select(this).on("mouseover", mouseover);
+            })
+      }
     
       d3.selectAll(".mode-sunburst-explanation")
           .style("visibility", "hidden");
