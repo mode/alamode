@@ -313,6 +313,7 @@ var alamode = {
         pivotColumn = o["pivot_column"],
         valueColumn = o["value_column"],
         // Optional
+        colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
         totalColumn = o["total_column"],
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
@@ -328,7 +329,7 @@ var alamode = {
       
     var color = d3.scale.quantize()
       .domain(d3.extent(data, function(d) { return d[valueColumn]; }))
-      .range(["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"])
+      .range(colors)
   
     d3.select(uniqContainerClass)
       .append("div")
@@ -1416,7 +1417,7 @@ var alamode = {
         height = o["height"] || width/1.9,
         title = o["title"] || queryName,
         valueRange = o["color_range"],
-        colors = o["colors"] || ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
+        colors = o["color_gradient"] || ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
         htmlElement = o["html_element"] || "body";
     
     var data = alamode.getDataFromQuery(queryName);
@@ -1460,7 +1461,7 @@ var alamode = {
         .range(colors);
 
     queue()
-        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-json/counties.json")
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-alamode/counties.json")
         .await(ready);
 
     function ready(error, us) {
@@ -1483,6 +1484,81 @@ var alamode = {
     }
   },
 
+  // Modified from Mike Bostock's "Choropleth"
+  // https://bl.ocks.org/mbostock/4060606
+  stateChoropleth: function(o) {
+    var id = alamode.makeId(10);
+
+    var queryName = o["query_name"],
+        stateColumn = o["state_column"],
+        valueColumn = o["value_column"],
+        code = o["state_code_type"], // Options: name, iso_code_numeric, iso_code_alpha_2, iso_code_alpha_3
+        // Optional
+        width = o["width"] || 950,
+        height = o["height"] || width/1.9,
+        title = o["title"] || queryName,
+        valueRange = o["color_range"],
+        colors = o["color_gradient"] || ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
+        htmlElement = o["html_element"] || "body";
+
+    var data = alamode.getDataFromQuery(queryName);
+
+    var rateById = d3.map();
+
+    var projection = d3.geoAlbersUsa()
+        .scale(width)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geoPath()
+        .projection(projection);
+
+    var uniqContainerClass = alamode.addContainerElement(htmlElement);
+
+    d3.select(uniqContainerClass)
+        .append("div")
+        .attr("class","mode-graphic-title")
+        .text(title)
+
+    svg = d3.select(uniqContainerClass)
+        .append("div")
+        .attr("class","mode-state-chorolpleth")
+      .append("svg")
+        .attr("id","mode-state-chorolpleth-" + id)
+        .attr("width",width)
+        .attr("height",height);
+
+    data.forEach( function(d) {
+      rateById.set(d[stateColumn],+d[valueColumn]);
+    })
+
+    if (!valueRange) {
+      colorDomain = d3.extent(data, function(d) { return d[valueColumn]; });
+    } else {
+      colorDomain = valueRange;
+    }
+
+    var quantize = d3.scale.quantize()
+        .domain(colorDomain)
+        .range(colors);
+
+    queue()
+        .defer(d3.json, "https://s3-us-west-2.amazonaws.com/mode-alamode/states.json")
+        .await(ready);
+
+    function ready(error, us) {
+
+      d3.select("#mode-state-chorolpleth-" + id)
+          .append("g")
+          .attr("class","mode-state-chorolpleth-states")
+        .selectAll(".mode-state-chorolpleth-states-" + id)
+          .data(us.features)
+        .enter().append("path")
+          .attr("class","mode-state-chorolpleth-states-" + id)
+          .attr("fill", function(d) { return quantize(rateById.get(d.properties[code]))})
+          .attr("d", path);
+    }
+  },
+
   // Modified from Vida World Map
   // https://vida.io/gists/TWNbJrHvRcR3DeAZq
   worldChoropleth: function(o) {
@@ -1497,7 +1573,7 @@ var alamode = {
         height = o["height"] || width*.8,
         title = o["title"] || queryName,
         valueRange = o["color_range"],
-        colors = o["colors"] || ["#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
+        colors = o["color_gradient"] || ["#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
         htmlElement = o["html_element"] || "body";
 
     var data = alamode.getDataFromQuery(queryName);
