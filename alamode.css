@@ -153,6 +153,17 @@
   stroke-linejoin: round;
 }
 
+/*State choropleth*/
+.mode-state-chorolpleth {
+  text-align: center;
+}
+
+.mode-state-chorolpleth-states {
+  fill: #666;
+  stroke: #fff;
+  stroke-linejoin: round;
+}
+
 /*World choropleth*/
 .mode-world-chorolpleth {
   text-align: center;
