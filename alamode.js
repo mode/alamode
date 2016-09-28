@@ -430,7 +430,7 @@ var alamode = {
       var type = getDataType(entry.column);
       
       var c = d3.format(","),
-          p = d3.format(".2p"),
+          p = d3.format("%"),
           t = d3.time.format("%b %d, %Y");
     
       if (entry.value == "") { 
@@ -441,7 +441,7 @@ var alamode = {
         return c(entry.value);
       } else if (entry.column == valueColumn && isPercent) {
         return p(entry.value);
-      } else if (entry.column == valueColumn && isPercent) {
+      } else if (entry.column == valueColumn) {
         return c(entry.value);
       } else {
         return entry.value;
