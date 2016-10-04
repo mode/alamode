@@ -105,7 +105,9 @@ var alamode = {
   
   customChartColors: function(o) {
     var charts = o["charts"],
-        colors = o["colors"];
+        colors = o["colors"],
+        opacities = o["opacity"];
+        lineDashes = o["line_dashes"];
     
     if (charts == "all") {
       charts = [];
@@ -122,26 +124,26 @@ var alamode = {
           seriesLength = series.length - 1,
           isAreaLength = isArea.length,
           isBarLength = isBar.length;
-      
+
       var colors = {};
-      
+
       var m = {};
       var r = {};
       var counter = 0;
-      
+
       if (legend.length == 0) {
-      
+
         m[0] = counter;
         r[counter] = 0;
         colors[0] = colorList[0];
-      
+
       } else {
-        
+
         for (i = 0; i < legend.length; i++) { 
           colors[i] = colorList[i % Object.keys(colorList).length];
         }
       }
-    
+
       legend.each(function(i) {
         if ($(this).css("fill-opacity") == 1) {
           m[i] = counter;
@@ -151,28 +153,43 @@ var alamode = {
         m[i] = -1;
         }
       })
-  
+
       for (var i in colors) {
-        chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css({"fill":colors[i],"stroke":colors[i]});
-        chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css({"fill":colors[i],"stroke":colors[i]});
-        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css({"fill":colors[i],"stroke":colors[i]}); 
-        chart.find(".nv-areaWrap .nv-area-" + m[i]).css({"fill":colors[i],"stroke":colors[i]}); 
-        chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css({"fill":colors[i],"stroke":colors[i]}); });
+        chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
+        chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"fill":colors[i],"stroke":colors[i] });
+        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] }); 
+        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] }); 
+        chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"fill":colors[i],"stroke":colors[i]}); });
       }
-    
+
+      for (var i in opacities) {
+        chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} );
+        chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"opacity":opacities[i]} );
+        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} ); 
+        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"opacity":opacities[i]} ); 
+        chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"opacity":opacities[i]} ); });
+      }
+
+      for (var i in lineDashes) {
+        chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"stroke-dasharray":lineDashes[i]} );
+      }
+
       chart.find(".chart-svg").mousemove(function() {
         chart.find(".nvtooltip table .legend-color-guide").each(function(i) {
-          if ( isAreaLength > 0 || isBarLength > 0) {
-            $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]})
+
+          if (legend.length == 0) {
+            $(this).find("div").css({"background-color":colors[r[i]]});
+          } else if ( isAreaLength > 0 || isBarLength > 0) {
+            $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
           } else {
-            $(this).find("div").css({"background-color":colors[r[i]]})
-          }
+            $(this).find("div").css({"background-color":colors[r[i]]});
+          } 
         })
-      
+
         sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
         chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
       })
-    
+
       chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) { 
         $(this).css({"fill":colors[i],"stroke":colors[i]});
       })
