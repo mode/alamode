@@ -106,7 +106,7 @@ var alamode = {
   customChartColors: function(o) {
     var charts = o["charts"],
         colors = o["colors"],
-        opacities = o["opacity"];
+        opacities = o["opacity"],
         lineDashes = o["line_dashes"];
     
     if (charts == "all") {
