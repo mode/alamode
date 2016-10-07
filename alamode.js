@@ -335,8 +335,9 @@ var alamode = {
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
         pivotLabel = o["pivot_label"] || "",
-        isPercent = o["value_is_percent"];
-    
+        isPercent = o["value_is_percent"],
+        precision = o["precision"] || 0;
+
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
         cohorts = _.uniq( _.map(data, cohortColumn) ),
@@ -443,13 +444,13 @@ var alamode = {
     }
     
     function fmt(entry) {
-    
+
       var type = getDataType(entry.column);
-      
+
       var c = d3.format(","),
-          p = d3.format("%"),
+          p = d3.format("." + precision + "%"),
           t = d3.time.format("%b %d, %Y");
-    
+
       if (entry.value == "") { 
         return entry.value;
       } else if (type == "datetime" || type == "timestamp" || type == "date") {
