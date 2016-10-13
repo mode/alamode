@@ -407,7 +407,7 @@ var alamode = {
     function cellClass(entry) {
       var type = getDataType(entry.column);
     
-      if (type == "float" || type == "integer") {
+      if (type == "float" || type == "integer" || type == "number") {
         return "heatmap-number";
       } else {
         return "heatmap-string";
