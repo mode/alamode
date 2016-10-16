@@ -817,15 +817,25 @@ var alamode = {
         queryName = o["query_name"],
         orientations = o["orientations"],
         values = o["comment_values"],
+        groupBy = o["group_by"],
         comments = o["comments"];
 
     var data = alamode.getDataFromQuery(queryName);
     var pointNumbers = [];
+    var dataGroups = {};
+
+    if (groupBy) {
+      dataGroups = _.groupBy(data, function(d) { return d[groupBy]; });
+    }
 
     comments.forEach(function(c,i) {
       var match = _.filter(data, function(d){ return d[xAxis] == values[i]; });
       if (match.length != 0) {
-        pointNumber = data.indexOf(match[0]);
+        if (groupBy) {
+          pointNumber = dataGroups[match[0][groupBy]].indexOf(match[0])
+        } else {
+          pointNumber = data.indexOf(match[0]);
+        }
       } else {
         pointNumber = -1
       }
