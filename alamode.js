@@ -563,7 +563,7 @@ var alamode = {
         dotOpacity = o["dot_opacity"] || .8;
     
     var data = alamode.getDataFromQuery(queryName),
-        validResults = [];
+        validData = [];
 
     data.forEach(function(d) {
       if (typeof d[latColumn] === "number" && typeof d[lngColumn] === "number") {
