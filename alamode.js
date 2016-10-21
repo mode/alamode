@@ -562,7 +562,14 @@ var alamode = {
         dotRadius = o["dot_size"] || .4,
         dotOpacity = o["dot_opacity"] || .8;
     
-    var data = alamode.getDataFromQuery(queryName);
+    var data = alamode.getDataFromQuery(queryName),
+        validResults = [];
+
+    data.forEach(function(d) {
+      if (typeof d[latColumn] === "number" && typeof d[lngColumn] === "number") {
+        validData.push(d)
+      }
+    })
     
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
       
@@ -589,7 +596,7 @@ var alamode = {
 
     var d = {
       max: 8,
-      data: data
+      data: validData
     };
 
     var cfg = {
