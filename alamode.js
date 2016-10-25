@@ -2288,6 +2288,242 @@ var alamode = {
     function degrees(radians) {
       return radians / Math.PI * 180 - 90;
     }
+  },
+
+  conditionalFormattingByColumn: function(o) {
+    var tableId = "#" + o["table_id"],
+        queryName = o["query_name"],
+        columnRules = o["column_rules"];
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName);
+
+    var colIndex = {};
+
+    var tableDiv = $(tableId + " table"),
+        tableHeader = $(tableId + " .js-header-table"),
+        headers = tableHeader.find("th"),
+        rows = tableDiv.find("tr"),
+        columnIndex = 0;
+
+    headers.each(function() {
+      text = $(this).find(".axel-table-header-label").text()
+      columnIndex = $(this).attr("data-axel-column")
+      colIndex[text] = columnIndex;
+    })
+
+    setTimeout(function(){
+      shade(columnRules)
+    },1000)
+
+    $(tableId).mousemove(function() {
+      shade(columnRules)
+    })
+
+    function shade(columnRules) {
+
+      columnRules.forEach(function(c) {
+        c.rules.forEach(function(r) {
+          if (r.type == "gradient") {
+            drawGradient(c.column, r.color)
+          } else if (r.type == "above" || r.type == "below") {
+            drawThreshold(c.column, r.type, r.value, r.color)
+          }
+        })
+      })
+    }
+
+    function drawGradient(column, color) {
+
+      var range = d3.extent(_.map(data, column));
+
+      var scale = d3.scale.linear()
+          .domain(range)
+          .interpolate(d3.interpolateHsl)
+          .range(color);
+
+      var idx = colIndex[column];
+
+      data.forEach(function(d,i) {
+        var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
+            selectedColor = scale(d[column]),
+            textColor = getTextColor(selectedColor),
+            cell = $(selector);
+
+        cell.css("background",selectedColor);
+        cell.css("color",textColor);
+      })
+    }
+
+    function drawThreshold(column, type, threshold, color) {
+
+      var idx = colIndex[column];
+      var textColor = getTextColor(color);
+
+      data.forEach(function(d,i) {
+        var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
+            cell = $(selector);
+
+        if (type == "above" && d[column] >= threshold) {
+          cell.css("background",color);
+          cell.css("color",textColor);
+        } else if (type == "below" && d[column] <= threshold) {
+          cell.css("background",color);
+          cell.css("color",textColor);
+        }
+      })
+    }
+
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    function getTextColor(hex) {
+      var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
+
+      if (isHex) {
+        rgb = hexToRgb(hex);
+        o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
+      } else {
+        o = 255;
+      }
+
+      if (o > 125) {
+        return "#2B2B2B";
+      } else {
+        return "#FCFCFC";
+      }
+    }
+  },
+
+  conditionalFormattingByTable: function (o) {
+    var tableId = "#" + o["table_id"],
+        queryName = o["query_name"],
+        includedColumns = o["columns"]
+        rules = o["rules"];
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName);
+
+    var colIndex = {};
+
+    var tableDiv = $(tableId + " table"),
+        tableHeader = $(tableId + " .js-header-table"),
+        headers = tableHeader.find("th"),
+        rows = tableDiv.find("tr"),
+        columnIndex = 0;
+
+    headers.each(function() {
+      text = $(this).find(".axel-table-header-label").text()
+      columnIndex = $(this).attr("data-axel-column")
+      colIndex[text] = columnIndex;
+    })
+
+    var combinedRange = [];
+
+    includedColumns.forEach(function(c) {
+      var range = d3.extent(_.map(data, c));
+      combinedRange = combinedRange.concat(range);
+    })
+
+    var fullRange = d3.extent(combinedRange);
+
+    setTimeout(function(){
+      shade(rules)
+    },1000)
+
+    $(tableId).mousemove(function() {
+      shade(rules)
+    })
+
+    function shade(rules) {
+
+      rules.forEach(function(r) {
+        if (r.type == "gradient" ) {
+          drawGradient(r.color)
+        } else if (r.type == "above" || r.type == "below") {
+          drawThreshold(r.type, r.value, r.color)
+        }
+      })
+    }
+
+    function drawGradient(color) {
+
+      var scale = d3.scale.linear()
+          .domain(fullRange)
+          .interpolate(d3.interpolateHsl)
+          .range(color);
+
+      data.forEach(function(d,i) {
+        includedColumns.forEach(function(c) {
+
+          var idx = colIndex[c];
+
+          var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
+              selectedColor = scale(d[c]),
+              textColor = getTextColor(selectedColor),
+              cell = $(selector);
+
+          cell.css("background",selectedColor);
+          cell.css("color",textColor);
+        })
+      })
+    }
+
+    function drawThreshold(type, threshold, color) {
+
+      var textColor = getTextColor(color);
+
+      data.forEach(function(d,i) {
+        includedColumns.forEach(function(c) {
+
+          var idx = colIndex[c];
+
+          var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
+              cell = $(selector);
+
+          if (type == "above" && d[c] >= threshold) {
+            cell.css("background",color);
+            cell.css("color",textColor);
+          } else if (type == "below" && d[c] <= threshold) {
+            cell.css("background",color);
+            cell.css("color",textColor);
+          }
+
+        })
+      })
+    }
+
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    function getTextColor(hex) {
+      var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
+
+      if (isHex) {
+        rgb = hexToRgb(hex);
+        o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
+      } else {
+        o = 255;
+      }
+
+      if (o > 125) {
+        return "#2B2B2B";
+      } else {
+        return "#FCFCFC";
+      }
+    }
   }
 
 }
