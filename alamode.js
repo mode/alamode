@@ -2324,16 +2324,19 @@ var alamode = {
 
       columnRules.forEach(function(c) {
         c.rules.forEach(function(r) {
+
+          var colorText = r.shade_text || false;
+
           if (r.type == "gradient") {
-            drawGradient(c.column, r.color)
+            drawGradient(c.column, r.color, colorText)
           } else if (r.type == "above" || r.type == "below") {
-            drawThreshold(c.column, r.type, r.value, r.color)
+            drawThreshold(c.column, r.type, r.value, r.color, colorText)
           }
         })
       })
     }
 
-    function drawGradient(column, color) {
+    function drawGradient(column, color, colorText) {
 
       var range = d3.extent(_.map(data, column));
 
@@ -2350,12 +2353,11 @@ var alamode = {
             textColor = getTextColor(selectedColor),
             cell = $(selector);
 
-        cell.css("background",selectedColor);
-        cell.css("color",textColor);
+        if (colorText) { cell.css("color",selectedColor); } else { cell.css( {"background":selectedColor,"color":textColor} ); }
       })
     }
 
-    function drawThreshold(column, type, threshold, color) {
+    function drawThreshold(column, type, threshold, color, colorText) {
 
       var idx = colIndex[column];
       var textColor = getTextColor(color);
@@ -2365,11 +2367,9 @@ var alamode = {
             cell = $(selector);
 
         if (type == "above" && d[column] >= threshold) {
-          cell.css("background",color);
-          cell.css("color",textColor);
+          if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
         } else if (type == "below" && d[column] <= threshold) {
-          cell.css("background",color);
-          cell.css("color",textColor);
+          if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
         }
       })
     }
@@ -2444,15 +2444,18 @@ var alamode = {
     function shade(rules) {
 
       rules.forEach(function(r) {
+
+        var colorText = r.shade_text || false;
+
         if (r.type == "gradient" ) {
-          drawGradient(r.color)
+          drawGradient(r.color, colorText)
         } else if (r.type == "above" || r.type == "below") {
-          drawThreshold(r.type, r.value, r.color)
+          drawThreshold(r.type, r.value, r.color, colorText)
         }
       })
     }
 
-    function drawGradient(color) {
+    function drawGradient(color, colorText) {
 
       var scale = d3.scale.linear()
           .domain(fullRange)
@@ -2469,13 +2472,12 @@ var alamode = {
               textColor = getTextColor(selectedColor),
               cell = $(selector);
 
-          cell.css("background",selectedColor);
-          cell.css("color",textColor);
+          if (colorText) { cell.css("color",selectedColor); } else { cell.css( {"background":selectedColor,"color":textColor} ); }
         })
       })
     }
 
-    function drawThreshold(type, threshold, color) {
+    function drawThreshold(type, threshold, color, colorText) {
 
       var textColor = getTextColor(color);
 
@@ -2488,11 +2490,9 @@ var alamode = {
               cell = $(selector);
 
           if (type == "above" && d[c] >= threshold) {
-            cell.css("background",color);
-            cell.css("color",textColor);
+            if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
           } else if (type == "below" && d[c] <= threshold) {
-            cell.css("background",color);
-            cell.css("color",textColor);
+            if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
           }
 
         })
