@@ -274,39 +274,43 @@ var alamode = {
   },
   
   addImagesToTables: function(o) {
-    var tableId = o["table"],
+
+    var tableId = "#" + o["table"],
         imageColumn = o["column"],
         imgHeight = o["image_height"] || 100;
-  
-    setTimeout(function(){ 
-    
-      var table = $("#" + tableId), 
-          headers = table.find("th"),
-          rows = table.find("tr"),
-          columnIndex = 0;
-      
-      headers.each(function() { 
-        if ($(this).text() == imageColumn) {
-          columnIndex = $(this).attr("data-axel-column")
+
+    setTimeout(function() {
+      drawImages()
+    },1000)
+
+    function drawImages() {
+      var tableDiv = $(tableId + " table"),
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = tableHeader.find("th"),
+          rows = tableDiv.find("tr");
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        if (text == imageColumn) {
+          columnIndex = +$(this).attr("data-axel-column")
         }
       })
-      
-      rows.each(function() { 
+
+      rows.each(function() {
         var cells = $(this).find("td");
-        
+
         cells.each(function(i) {
-          if (i == columnIndex) {
+          if (i == (columnIndex - 1)) {
             var content = $(this).text();
-            
+
             $(this).css("text-align","center")
             $(this).html("<img style='height: " + imgHeight + "px;' src='" + content + "'>") 
           }
         })
-      }) 
-      
-    },1000); 
+      })
+    }
   },
-  
+
   resizeChartHeight: function(o) {
     var chart = o["chart"],
         height = o["height"];
