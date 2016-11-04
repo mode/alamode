@@ -2022,7 +2022,9 @@ var alamode = {
         padding = o["padding_for_names"] || "200",
         width = o["chart_width"] || "800",
         height = o["chart_height"] || "800",
-        colors = o["group_colors"] || "";
+        colors = o["group_colors"] || "",
+        leftLabel = o["left_label"] || "",
+        topLabel = o["top_label"] || "";
 
     var margin = {top: padding, right: 10, bottom: 10, left: padding};
 
@@ -2040,7 +2042,7 @@ var alamode = {
       d["source_id"] = nameMap[d.source];
       d["target_id"] = nameMap[d.target];
     })
-
+    
     var x = d3.scale.ordinal().rangeBands([0, width]);
 
     var z = d3.scale.linear()
@@ -2069,16 +2071,17 @@ var alamode = {
         .attr("id",id);
 
     var svg = d3.select("#" + id).append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     graph = {"nodes":nodes, "links":links}
 
-     var matrix = [],
-         nodes = graph.nodes,
-         n = nodes.length;
+    var matrix = [],
+        nodes = graph.nodes,
+        n = nodes.length;
 
     nodes.forEach(function(node, i) {
       node.index = i;
@@ -2087,12 +2090,15 @@ var alamode = {
     });
 
     graph.links.forEach(function(link) {
-      matrix[link.source_id][link.target_id].z += link.edge_size;
-      matrix[link.target_id][link.source_id].z += link.edge_size;
-      matrix[link.source_id][link.source_id].z += link.edge_size;
-      matrix[link.target_id][link.target_id].z += link.edge_size;
-      nodes[link.source_id].count += link.edge_size;
-      nodes[link.target_id].count += link.edge_size;
+      if (typeof(matrix[link.source_id][link.target_id]) !== "undefined") {
+        matrix[link.source_id][link.target_id].z += link.edge_size;    
+        nodes[link.source_id].count += link.edge_size;
+        nodes[link.target_id].count += link.edge_size;
+      } else {
+        matrix[link.source_id][link.target_id] = {};
+        matrix[link.source_id][link.target_id]["z"] = 0;
+      }
+
     });
 
     var orders = {
@@ -2103,12 +2109,27 @@ var alamode = {
 
     x.domain(orders.name);
 
-    svg.append("rect")
+    svg.append("text")
+        .attr("class","mode-network-matrix-axis-label")
+        .attr("x",(width + margin.left + margin.right) / 2)
+        .attr("y",25)
+        .attr("text-anchor","middle")
+        .text(topLabel)
+    
+    svg.append("text")
+        .attr("class","mode-network-matrix-axis-label")
+        .attr("x",(height + margin.top + margin.bottom) / -2)
+        .attr("y",25)
+        .attr("transform","rotate(-90)")
+        .attr("text-anchor","middle")
+        .text(leftLabel)
+
+    g.append("rect")
         .attr("class", "mode-network-matrix-background")
         .attr("width", width)
         .attr("height", height);
 
-    var row = svg.selectAll(".mode-network-matrix-row")
+    var row = g.selectAll(".mode-network-matrix-row")
         .data(matrix)
       .enter().append("g")
         .attr("class", "mode-network-matrix-row")
@@ -2127,7 +2148,7 @@ var alamode = {
         .attr("text-anchor", "end")
         .text(function(d, i) { return nodes[i].node; });
 
-    var column = svg.selectAll(".mode-network-matrix-column")
+    var column = g.selectAll(".mode-network-matrix-column")
         .data(matrix)
       .enter().append("g")
         .attr("class", "mode-network-matrix-column")
@@ -2175,7 +2196,7 @@ var alamode = {
     function order(value) {
       x.domain(orders[value]);
 
-      var t = svg.transition().duration(1000);
+      var t = g.transition().duration(1000);
 
       t.selectAll(".mode-network-matrix-row")
           .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
