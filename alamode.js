@@ -203,8 +203,9 @@ var alamode = {
   },
   
   addTotalsRow: function(o) {
-
     var queryName = o["query_name"],
+        selectedTable = o["table_id"] || "",
+        tableId = "#" + selectedTable,
         resultColumns = alamode.getColumnsFromQuery(queryName),
         data = alamode.getDataFromQuery(queryName),
         selectedColumns = o["columns_with_totals"];
@@ -253,9 +254,9 @@ var alamode = {
     
       totals.forEach(function(t) {
         if (t.total != "") {
-          rowString = rowString + "<td class='cell-type-number'>" + fmt(t.total) + "</td>"  
+          rowString = rowString + "<td class='cell-type-number'>" + fmt(t.total) + "</td>"
         } else {
-          rowString = rowString + "<td></td>"  
+          rowString = rowString + "<td></td>"
         }
       })
     
@@ -264,8 +265,13 @@ var alamode = {
     
     setTimeout(function(){ 
     
-      var table = $(".main-table"),
-          lastRow = table.find("tr:last")
+      if (tableId == "#") {
+        table = $(".main-table")
+      } else {
+        table = $(tableId + " .main-table")
+      }
+
+      var lastRow = table.find("tr:last")
         
       var totalRow = makeRow(totals)
         
