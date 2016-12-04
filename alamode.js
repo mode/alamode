@@ -1898,10 +1898,27 @@ var alamode = {
         title = o["title"] || queryName,
         width = o["chart_width"] || "800",
         height = o["chart_height"] || "800",
-        colors = o["group_colors"] || "";
+        colors = o["group_colors"] || "",
+        visibleLinks = o["links_to_show"] || 100;
 
     var nodes = alamode.getDataFromQuery(nodeQuery),
-        links = alamode.getDataFromQuery(edgeQuery);
+        initialLinks = alamode.getDataFromQuery(edgeQuery);
+
+    var links = [];
+
+    initialLinks.forEach(function(l) {
+      var match1 = links.filter(function(d) { return d.target == l.source; }),
+          match2 = match1.filter(function(d) { return d.source == l.target; });
+
+      if (match2.length != 0) {
+        match2["edge_size"] += l.edge_size;
+      } else {
+        links.push(l)
+      }
+    })
+
+    links = links.sort(function(a, b) {return b.edge_size - a.edge_size} );
+    links = links.slice(0,visibleLinks)
 
     nameMap = {};
 
@@ -2068,7 +2085,8 @@ var alamode = {
         .html('<p>Order: <select id="mode-network-matrix-order-picker-' + id + '">' +
           '<option value="name">Name</option>' +
           '<option value="count">Frequency</option>' +
-          '<option value="group">Group</option></select>')
+          '<option value="group">Group</option></select>'
+        )
 
     d3.select(uniqContainerClass)
         .append("div")
@@ -2076,9 +2094,16 @@ var alamode = {
         .style("width",width)
         .attr("id",id);
 
+    var tip = d3.tip()
+        .attr("class","mode-network-matrix-tooltip")
+        .offset([-10, 0])
+        .html(function(d) { return d.z; })
+
     var svg = d3.select("#" + id).append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("height", height + margin.top + margin.bottom);
+
+    svg.call(tip);
     
     var g = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -2182,8 +2207,14 @@ var alamode = {
           .attr("height", x.rangeBand())
           .style("fill-opacity", function(d) { return z(d.z); })
           .style("fill", function(d) { return nodes[d.x].node_group == nodes[d.y].node_group ? colors[nodes[d.x].node_group] : "#2B2B2B"; })
-          .on("mouseover", mouseover)
-          .on("mouseout", mouseout);
+          .on("mouseover", function(d) {
+            mouseover(d);
+            tip.show(d);
+          })
+          .on("mouseout", function(d) {
+            mouseout(d);
+            tip.hide(d);
+          });
     }
 
     function mouseover(p) {
@@ -2225,7 +2256,6 @@ var alamode = {
         isNumeric = o["groups_are_numeric"],
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
-        padding = o["padding_for_names"] || "200",
         width = o["chart_width"] || "800",
         height = o["chart_height"] || "800",
         colors = o["group_colors"] || "";
@@ -2283,11 +2313,18 @@ var alamode = {
         .domain(d3.extent(nodes, function(d) { return d.node_size; } ))
         .range([innerRadius, outerRadius]);
 
+    var tip = d3.tip()
+        .attr("class","mode-hive-tooltip")
+        .offset([-10, 0])
+        .html(function(d) { return d.node; })
+
     var svg = d3.select("#" + id).append("svg")
       .attr("width", width)
       .attr("height", height)
     .append("g")
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    svg.call(tip);
 
     svg.selectAll(".mode-hive-axis")
         .data(d3.range(groups.length))
@@ -2314,7 +2351,29 @@ var alamode = {
         .attr("transform", function(d) { return "rotate(" + degrees(angle(d.x)) + ")"; })
         .attr("cx", function(d) { return radius(d.y); })
         .attr("r", 5)
-        .style("fill", function(d) { return colors[d.node_group]; });
+        .style("fill", function(d) { return colors[d.node_group]; })
+        .on("mouseover", function(d) {
+          tip.show(d);
+
+          d3.select(this).attr("class","mode-hive-node mode-hive-node-selected")
+
+          d3.selectAll(".mode-hive-link")
+              .data(links)
+              .attr("class", function(l) {
+                  if (l.source.node == d.node) {
+                    return "mode-hive-link-selected";
+                  } else if (l.target.node == d.node) {
+                    return "mode-hive-link-selected";
+                  } else {
+                    return "mode-hive-link";
+                  }
+              });
+        })
+        .on("mouseout", function(d) {
+          tip.hide(d);
+          d3.select(this).attr("class","mode-hive-node")
+          d3.selectAll(".mode-hive-link-selected").attr("class", "mode-hive-link")
+        });
 
     function degrees(radians) {
       return radians / Math.PI * 180 - 90;
