@@ -464,7 +464,11 @@ var alamode = {
       if (entry.value == "") { 
         return entry.value;
       } else if (type == "datetime" || type == "timestamp" || type == "date") {
-        return t(new Date(entry.value))
+        if (typeof moment == "function") {
+          return moment(entry.value).utc().format("ll")
+        } else {
+          return t(new Date(entry.value));
+        }
       } else if (entry.column == totalColumn) {
         return c(entry.value);
       } else if (entry.column == valueColumn && isPercent) {
