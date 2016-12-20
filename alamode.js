@@ -38,7 +38,7 @@ var alamode = {
     if (el == "body") {
       $("<div id='" + id + "'></div>").addClass(id).addClass("mode-graphic-container").appendTo(".mode-content");
     } else if ($(el).length === 0) {
-      reportError("No such element: '" + el + "'");
+      alamode.reportError("No such element: '" + el + "'");
     } else {
       $(el).addClass("mode-graphic-container");
       $(el).addClass(id)
