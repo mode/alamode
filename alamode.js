@@ -9,7 +9,16 @@ var alamode = {
   },
   
   getDataFromQuery: function(queryName) {
-    return datasets.filter(function(d) { return d.queryName == queryName; })[0].content;
+    var data = datasets.filter(function(d) { return d.queryName == queryName; })[0];
+    if (!data) {
+      reportError("No such query: '" + queryName + "'");
+      return [];
+    }
+    return data.content;
+  },
+  
+  reportError: function(msg) {
+    $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
   },
   
   makeId: function(chars) {
@@ -28,6 +37,8 @@ var alamode = {
     
     if (el == "body") {
       $("<div id='" + id + "'></div>").addClass(id).addClass("mode-graphic-container").appendTo(".mode-content");
+    } else if ($(el).length === 0) {
+      reportError("No such element: '" + el + "'");
     } else {
       $(el).addClass("mode-graphic-container");
       $(el).addClass(id)

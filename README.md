@@ -24,7 +24,7 @@ See [the gallery of visualizations](https://community.modeanalytics.com/gallery)
 	```
 	alamode.sunburstChart(
 		{
-			html_elemnt: "#sunburst-div",
+			html_element: "#sunburst-div",
 	    	query_name: "My Sunburst Query",
 	    	title: "A chart built with alamode",
 	    	event_columns: ["event_1","event_2","event_3"],
