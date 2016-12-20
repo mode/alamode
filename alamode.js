@@ -3,6 +3,10 @@
 // Visualizations for Mode reports
 
 var alamode = {
+
+  reportError: function(msg) {
+    $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
+  },
   
   getColumnsFromQuery: function(queryName) {
     return datasets.filter(function(d) { return d.queryName == queryName; })[0].columns;
@@ -11,16 +15,12 @@ var alamode = {
   getDataFromQuery: function(queryName) {
     var data = datasets.filter(function(d) { return d.queryName == queryName; })[0];
     if (!data) {
-      reportError("No such query: '" + queryName + "'");
+      alamode.reportError("No such query: '" + queryName + "'");
       return [];
     }
     return data.content;
   },
-  
-  reportError: function(msg) {
-    $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
-  },
-  
+
   makeId: function(chars) {
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
         text = "";
