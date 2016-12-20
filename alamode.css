@@ -18,8 +18,10 @@
 
 h1.mode-error {
   padding: .2em 2em;
-  background: red;
-  color: white;
+  background: #DA364A;
+  color: #FCFCFC;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 /*Retention heatmap styling*/

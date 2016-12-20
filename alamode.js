@@ -2,10 +2,6 @@
 // 
 // Visualizations for Mode reports
 
-function reportError(msg) {
-  $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
-}
-
 var alamode = {
   
   getColumnsFromQuery: function(queryName) {
@@ -19,6 +15,10 @@ var alamode = {
       return [];
     }
     return data.content;
+  },
+  
+  reportError: function(msg) {
+    $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
   },
   
   makeId: function(chars) {
