@@ -129,6 +129,8 @@ var alamode = {
     function drawColors(id,colorList) {
       var chart = $("#" + id),
           series = chart.find(".nvtooltip table .legend-color-guide"),
+          seriesGs = chart.find('.nv-groups g'),
+          seriesCount = seriesGs.length,
           isArea = chart.find(".nv-areaWrap"),
           isBar = chart.find(".nv-barsWrap"),
           legend = chart.find(".nv-series .nv-legend-symbol"),
@@ -142,15 +144,19 @@ var alamode = {
       var r = {};
       var counter = 0;
 
-      if (legend.length == 0) {
-
+      if (legend.length == 0 && seriesCount <= 1) {
         m[0] = counter;
         r[counter] = 0;
         colors[0] = colorList[0];
 
-      } else {
+      } else if (legend.length == 0 && seriesCount > 1) {
+        for (i = 0; i < seriesCount; i++) {
+          m[i] = i;
+          colors = colorList;
+        }
 
-        for (i = 0; i < legend.length; i++) { 
+      } else {
+        for (i = 0; i < legend.length; i++) {
           colors[i] = colorList[i % Object.keys(colorList).length];
         }
       }
