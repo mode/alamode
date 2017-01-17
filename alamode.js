@@ -1,6 +1,7 @@
-// alamode.js
-// 
+// alamode.js 
+//
 // Visualizations for Mode reports
+// v0.10
 
 var alamode = {
 
