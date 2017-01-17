@@ -303,8 +303,18 @@ var alamode = {
         imgHeight = o["image_height"] || 100;
 
     setTimeout(function() {
-      drawImages()
+      drawImages();
     },1000)
+
+    $(tableId).keyup(function() {
+      setTimeout(function() {
+        drawImages();
+      },500)
+    });
+
+    $(tableId).mousemove(function() {
+      drawImages();
+    })
 
     function drawImages() {
       var tableDiv = $(tableId + " table"),
@@ -326,8 +336,10 @@ var alamode = {
           if (i == (columnIndex - 1)) {
             var content = $(this).text();
 
-            $(this).css("text-align","center")
-            $(this).html("<img style='height: " + imgHeight + "px;' src='" + content + "'>") 
+            if ($(this).find("img").length == 0) {
+              $(this).css("text-align","center")
+              $(this).html("<img style='height: " + imgHeight + "px;' src='" + content + "'>")
+            }
           }
         })
       })
