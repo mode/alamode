@@ -1,7 +1,7 @@
 // alamode.js 
 //
 // Visualizations for Mode reports
-var version = "0.10";
+var version = "0.11";
 
 var alamode = {
 
@@ -10,11 +10,16 @@ var alamode = {
   },
   
   getColumnsFromQuery: function(queryName) {
-    return datasets.filter(function(d) { return d.queryName == queryName; })[0].columns;
+    var columns = datasets.filter(function(d) { if (d) { return d.queryName == queryName;}; })[0];
+    if (!columns) {
+      alamode.reportError("No such query: '" + queryName + "'");
+      return [];
+    }
+    return columns.columns
   },
   
   getDataFromQuery: function(queryName) {
-    var data = datasets.filter(function(d) { return d.queryName == queryName; })[0];
+    var data = datasets.filter(function(d) { if (d) { return d.queryName == queryName;}; })[0];
     if (!data) {
       alamode.reportError("No such query: '" + queryName + "'");
       return [];
