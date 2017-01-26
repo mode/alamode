@@ -1,4 +1,4 @@
-// alamode.js 
+// alamode.js
 //
 // Visualizations for Mode reports
 var version = "0.11";
@@ -8,7 +8,7 @@ var alamode = {
   reportError: function(msg) {
     $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
   },
-  
+
   getColumnsFromQuery: function(queryName) {
     var columns = datasets.filter(function(d) { if (d) { return d.queryName == queryName;}; })[0];
     if (!columns) {
@@ -17,7 +17,7 @@ var alamode = {
     }
     return columns.columns
   },
-  
+
   getDataFromQuery: function(queryName) {
     var data = datasets.filter(function(d) { if (d) { return d.queryName == queryName;}; })[0];
     if (!data) {
@@ -30,17 +30,17 @@ var alamode = {
   makeId: function(chars) {
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
         text = "";
-    
+
     for (var i=0; i < chars; i++ ) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
   },
-  
+
   addContainerElement: function(el) {
-    
+
     id = alamode.makeId(10);
-    
+
     if (el == "body") {
       $("<div id='" + id + "'></div>").addClass(id).addClass("mode-graphic-container").appendTo(".mode-content");
     } else if ($(el).length === 0) {
@@ -49,7 +49,7 @@ var alamode = {
       $(el).addClass("mode-graphic-container");
       $(el).addClass(id)
     }
-    
+
     return "." + id;
   },
 
@@ -84,7 +84,7 @@ var alamode = {
           headers = tableHeader.find("th"),
           rows = tableDiv.find("tr"),
           columnIndex = 0;
-      
+
       headers.each(function() {
         text = $(this).find(".axel-table-header-label").text()
         columnIndex = $(this).attr("data-axel-column")
@@ -119,19 +119,19 @@ var alamode = {
       })
     }
   },
-  
+
   customChartColors: function(o) {
     var charts = o["charts"],
         colors = o["colors"],
         opacities = o["opacity"],
         lineDashes = o["line_dashes"];
-    
+
     if (charts == "all") {
       charts = [];
-      
-      $("mode-chart").each(function(){ charts.push(this.id); });      
+
+      $("mode-chart").each(function(){ charts.push(this.id); });
     }
-    
+
     function drawColors(id,colorList) {
       var chart = $("#" + id),
           series = chart.find(".nvtooltip table .legend-color-guide"),
@@ -180,16 +180,16 @@ var alamode = {
       for (var i in colors) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"fill":colors[i],"stroke":colors[i] });
-        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] }); 
-        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] }); 
+        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
+        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"fill":colors[i],"stroke":colors[i]}); });
       }
 
       for (var i in opacities) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} );
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"opacity":opacities[i]} );
-        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} ); 
-        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"opacity":opacities[i]} ); 
+        chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} );
+        chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"opacity":opacities[i]} );
         chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"opacity":opacities[i]} ); });
       }
 
@@ -206,25 +206,25 @@ var alamode = {
             $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
           } else {
             $(this).find("div").css({"background-color":colors[r[i]]});
-          } 
+          }
         })
 
         sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
         chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
       })
 
-      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) { 
+      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) {
         $(this).css({"fill":colors[i],"stroke":colors[i]});
       })
     }
-    
+
     setInterval(function () {
       charts.forEach(function(c) {
-        drawColors(c,colors)    
+        drawColors(c,colors)
       })
     }, 500)
   },
-  
+
   addTotalsRow: function(o) {
     var queryName = o["query_name"],
         selectedTable = o["table_id"] || "",
@@ -234,47 +234,47 @@ var alamode = {
         selectedColumns = o["columns_with_totals"];
 
     var fmt = d3.format(",");
-  
+
     var columnsWithSums = getColumns(selectedColumns),
         totals = makeSums(columnsWithSums);
-  
+
     function getColumns(selectedColumns) {
-      
+
       numberColumns = _.map(_.filter(resultColumns,function(c) {
         return ["number","integer"].indexOf(c.type) != -1;
       }),"name")
-    
+
       if (selectedColumns == "all") {
         return numberColumns;
       } else {
         return _.intersection(selectedColumns, numberColumns);
       }
     }
-    
+
     function makeSums(columnsWithSums) {
       var sumObject = [],
           emptyObj = {idx: i, name: "", total: ""};
-      
+
       resultColumns.forEach(function(c,i) {
         if (columnsWithSums.indexOf(c.name) == -1) {
           var obj = emptyObj;
-          
+
         } else {
           var values = _.map(data, c.name),
               total = d3.sum(values);
-              
-          var obj = {idx: i, name: c.name, total: total}  
+
+          var obj = {idx: i, name: c.name, total: total}
         }
-      
+
         sumObject.push(obj)
       })
-    
+
       return sumObject;
     }
-  
+
     function makeRow(totals) {
       var rowString = "<tr><td>TTL</td>";
-    
+
       totals.forEach(function(t) {
         if (t.total != "") {
           rowString = rowString + "<td class='cell-type-number'>" + fmt(t.total) + "</td>"
@@ -282,12 +282,12 @@ var alamode = {
           rowString = rowString + "<td></td>"
         }
       })
-    
+
       return rowString + "</tr>"
     }
-    
-    setTimeout(function(){ 
-    
+
+    setTimeout(function(){
+
       if (tableId == "#") {
         table = $(".main-table")
       } else {
@@ -295,13 +295,13 @@ var alamode = {
       }
 
       var lastRow = table.find("tr:last")
-        
+
       var totalRow = makeRow(totals)
-        
+
       lastRow.after(totalRow)
     },1000);
   },
-  
+
   addImagesToTables: function(o) {
 
     var tableId = "#" + o["table"],
@@ -355,7 +355,7 @@ var alamode = {
   resizeChartHeight: function(o) {
     var chart = o["chart"],
         height = o["height"];
-    
+
     if (chart.slice(0,6) == "python") {
       $("#" + chart + " .mode-python").css("height",height)
       $("#" + chart + " .mode-python").css("max-height",height)
@@ -364,10 +364,10 @@ var alamode = {
       $("#" + chart + " .chart").css("height",height)
       $("#" + chart + " .chart-svg").css("height",height)
     }
-    
+
     window.dispatchEvent(new Event('resize'));
   },
-  
+
   retentionHeatmap: function(o) {
 
     var queryName = o["query_name"],
@@ -387,32 +387,32 @@ var alamode = {
         columns = alamode.getColumnsFromQuery(queryName),
         cohorts = _.uniq( _.map(data, cohortColumn) ),
         pivots = _.uniq( _.map(data, pivotColumn) );
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     var color = d3.scale.quantize()
       .domain(d3.extent(data, function(d) { return d[valueColumn]; }))
       .range(colors)
-  
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-graphic-title")
       .text(title)
-      
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-retention-heatmap-label")
       .text(pivotLabel)
-    
+
     if (totalColumn) {
-      headers = [cohortColumn, totalColumn].concat(pivots)  
+      headers = [cohortColumn, totalColumn].concat(pivots)
     } else {
       headers = [cohortColumn].concat(pivots)
     }
-  
+
     var table = d3.select(uniqContainerClass).append("table")
         .attr("class","mode-retention-heatmap-table");
-    
+
     table.selectAll(".mode-retention-heatmap-table-header")
         .data([0])
       .enter().append("tr")
@@ -420,12 +420,12 @@ var alamode = {
       .selectAll("mode-retention-heatmap-table-header-cell")
         .data(headers)
       .enter().append("td")
-        .attr("class",function(d) { 
+        .attr("class",function(d) {
           if (isNaN(d)) { return "mode-retention-heatmap-table-header-cell heatmap-string"; }
           else { return "mode-retention-heatmap-table-header-cell heatmap-number"; }
         })
       .text(function(d) { return d; })
-  
+
     table.selectAll(".mode-retention-heatmap-table-row")
         .data(cohorts)
       .enter().append("tr")
@@ -436,7 +436,7 @@ var alamode = {
         .style("background",function(d) { if (checkShade(d)) { return color(d.value); } })
         .attr("class",function(d) { return cellClass(d); })
         .text(function(d) { return fmt(d,o); })
-    
+
     function checkShade(entry) {
       if (entry.value == "") {
         return false;
@@ -448,36 +448,36 @@ var alamode = {
         return false;
       }
     }
-  
+
     function cellClass(entry) {
       var type = getDataType(entry.column);
-    
+
       if (type == "float" || type == "integer" || type == "number") {
         return "heatmap-number";
       } else {
         return "heatmap-string";
       }
     }
-  
+
     function getDataType(column) {
       return columns.filter(function(d) { return d.name == column })[0].type;
     }
-  
+
     function makeRow(data,cohort) {
       var row = [ {column: cohortColumn, value: cohort } ];
-    
-      if (totalColumn) { 
+
+      if (totalColumn) {
         var total = _.filter(data, function(d) { return d[cohortColumn] == cohort; })[0],
             totalObject = { column: totalColumn, value: total[totalColumn] };
-        row = row.concat(totalObject); 
+        row = row.concat(totalObject);
       }
-    
+
       pivots.forEach(function(p) {
-      
-        var matches = _.filter(data, function(d) { 
-          return d[cohortColumn] == cohort && d[pivotColumn] == p 
-        }); 
-      
+
+        var matches = _.filter(data, function(d) {
+          return d[cohortColumn] == cohort && d[pivotColumn] == p
+        });
+
         if (matches.length > 0) {
           entry = d3.mean( _.map(matches,valueColumn) );
         } else {
@@ -487,7 +487,7 @@ var alamode = {
       })
       return row;
     }
-    
+
     function fmt(entry) {
 
       var type = getDataType(entry.column);
@@ -496,7 +496,7 @@ var alamode = {
           p = d3.format("." + precision + "%"),
           t = d3.time.format("%b %d, %Y");
 
-      if (entry.value == "") { 
+      if (entry.value == "") {
         return entry.value;
       } else if (type == "datetime" || type == "timestamp" || type == "date") {
         if (typeof moment == "function") {
@@ -512,15 +512,15 @@ var alamode = {
         return c(entry.value);
       } else {
         return entry.value;
-      } 
+      }
     }
   },
-  
+
   // Built with Google Maps Javascript API
   // https://developers.google.com/maps/documentation/javascript/
   googleMap: function(o) {
     var id = alamode.makeId(10);
-    
+
     var latColumn = o["lat_column"],
         lngColumn = o["lng_column"],
         queryName = o["query_name"],
@@ -533,71 +533,71 @@ var alamode = {
         centerLng = o["center_lng"] || -98.35,
         zoom = o["starting_zoom"] || 4,
         mapType = o["map_type"] || "terrain";
-    
+
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-graphic-title")
       .text(title)
-    
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-google-map")
       .attr("id",id)
-        
+
     jQuery.getScript("https://maps.googleapis.com/maps/api/js?key=" + apiKey, function() {
-  
+
       initMap()
-  
+
       function initMap() {
-      
+
         var myOptions = {
           zoom: zoom,
           center: new google.maps.LatLng(centerLat, centerLng),
           mapTypeId: mapType
         };
-        
+
         var map = new google.maps.Map(document.getElementById(id), myOptions );
-    
+
         data.forEach(function(d) {
-          
+
           var lat = d[latColumn],
               lng = d[lngColumn];
-      
+
           if (labelColumn) {
             label = d[labelColumn];
           } else {
             label = "";
           }
-          
+
           var marker = new google.maps.Marker({
             position: {lat:lat, lng:lng},
             map: map,
             title: label
           })
-          
+
           var infowindow = new google.maps.InfoWindow({
             content: label
           });
-          
+
           marker.addListener('click', function() {
             infowindow.open(map, marker);
           });
-      
+
         });
-    
+
       }
     })
   },
-  
+
   // Built with Leaflet
   // http://leaflet.github.io/Leaflet.heat/demo/
   leafletMap: function(o) {
     var id = alamode.makeId(10);
-    
+
     var latColumn = o["lat_column"],
         lngColumn = o["lng_column"],
         queryName = o["query_name"],
@@ -610,7 +610,7 @@ var alamode = {
         zoom = o["starting_zoom"] || 4,
         dotRadius = o["dot_size"] || .4,
         dotOpacity = o["dot_opacity"] || .8;
-    
+
     var data = alamode.getDataFromQuery(queryName),
         validData = [];
 
@@ -619,9 +619,9 @@ var alamode = {
         validData.push(d)
       }
     })
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
       .style("height",height + "px")
       .append("div")
@@ -651,7 +651,7 @@ var alamode = {
     var cfg = {
       "radius": dotRadius,
       "maxOpacity": dotOpacity,
-      "scaleRadius": true, 
+      "scaleRadius": true,
       "useLocalExtrema": true,
       "latField": latColumn,
       "lngField": lngColumn
@@ -664,7 +664,7 @@ var alamode = {
     };
 
     var heatmapLayer = new HeatmapOverlay(cfg);
-    
+
     var map = new L.Map(id, {
       center: new L.LatLng(C.lat, C.lng),
       zoom: Math.floor(C.zoom),
@@ -673,7 +673,7 @@ var alamode = {
 
     heatmapLayer.setData(d);
   },
-  
+
   // Built with Jason Davies' d3-cloud
   // https://www.jasondavies.com/wordcloud/
   wordCloud: function(o) {
@@ -686,20 +686,20 @@ var alamode = {
         height = o["height"] || "400",
         width = o["width"] || "800",
         colors = o["colors"] || ["black"];
-    
+
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
       .append("div")
       .attr("class","mode-graphic-title")
       .text(title)
-  
+
     var textScale = d3.scale.linear()
         .domain(d3.extent(data,function(d) { return d[wordCount]; } ))
         .range([12,60]);
-  
+
     var layout = d3.layout.cloud()
         .size([width, height])
         .words(data.map(function(d) {
@@ -710,9 +710,9 @@ var alamode = {
         .font("Impact")
         .fontSize(function(d) { return d.size; })
         .on("end", draw);
-  
+
     layout.start();
-    
+
     function draw(words) {
       d3.select(uniqContainerClass).append("div")
           .attr("class","mode-wordcloud")
@@ -734,12 +734,12 @@ var alamode = {
           .text(function(d) { return d.text; });
     }
   },
-  
+
   // Built with Jake Zatecky's d3-funnel
   // http://jakezatecky.github.io/d3-funnel/
   funnel: function(o) {
     var id = alamode.makeId(10)
-    
+
     var queryName = o["query_name"],
         stageColumn = o["stage_column"],
         valueColumn = o["value_column"],
@@ -750,9 +750,9 @@ var alamode = {
         width = o["width"] || "500";
 
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
@@ -770,25 +770,25 @@ var alamode = {
     data.forEach(function(d) {
       funnelData.push( [ d[stageColumn], d[valueColumn] ])
     })
-    
+
     var options = {
       label: { format: '{l}: {f}', },
       block: { dynamicHeight: true },
       chart: { bottomPinch: 1 },
       animation: 100
-    };  
-    
+    };
+
     var chart = new D3Funnel("#" + id);
-    
+
     chart.draw(funnelData, options);
-    
+
     d3.select("#" + id).style("height",height + "px");
   },
-  
+
   // Buitl with NVD3 multibar horizontal bar chart
-  // http://nvd3-community.github.io/nvd3/ 
+  // http://nvd3-community.github.io/nvd3/
   horizontalBarChart: function(o) {
-    
+
     var queryName = o["query_name"],
         barColumn = o["bar_column"],
         seriesColumns = o["series_columns"],
@@ -800,46 +800,46 @@ var alamode = {
         title = o["title"] || queryName,
         height = o["chart_height"] || 395,
         width = o["width"] || "500";
-    
+
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
         .text(title)
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-horizontal-bar-chart")
         .style("height",(height - 50) + "px")
       .append("svg");
-    
+
     var nvData = [];
-    
+
     seriesColumns.forEach(function(s,i) {
       var seriesObj = {
         "key":s,
         "color": colors[ i % colors.length ]
       }
-    
+
     var seriesData = [];
-    
+
     data.forEach(function(d) {
       seriesData.push(  { "label": d[o["bar_column"]], "value": d[s] } )
     })
-    
+
     seriesObj["values"] = seriesData;
       nvData.push(seriesObj);
     })
-  
+
     nv.addGraph(function() {
       var chart = nv.models.multiBarHorizontalChart()
           .x(function(d) { return d.label })
           .y(function(d) { return d.value })
           .margin({top: 30, right: 20, bottom: 50, left: leftpad})
-          .showValues(true) 
+          .showValues(true)
           .showControls(false)
           .stacked(stacked);
 
@@ -855,7 +855,7 @@ var alamode = {
       return chart;
     });
   },
-  
+
   chartAnnotations: function(o) {
     var chart = "#" + o["chart_id"],
         xAxis = o["x_axis_column"],
@@ -906,27 +906,27 @@ var alamode = {
             openPos = translate.indexOf("("),
             closePos = translate.indexOf(")"),
             commaPos = translate.indexOf(",");
-        
+
         var xTrans = +translate.slice(openPos+1,commaPos),
             yTrans = +translate.slice(commaPos+1,closePos);
 
         if (pointNumber != -1 && orientation == "v") {
-        
+
           var pointTranlate = $(chart).find(".nv-point.nv-point-" + pointNumber).attr("transform"),
               pointOpenPos = pointTranlate.indexOf("("),
               pointClosePos = pointTranlate.indexOf(")"),
               pointCommaPos = pointTranlate.indexOf(",");
-          
+
           var xPoint = +pointTranlate.slice(pointOpenPos+1,pointCommaPos),
               yPoint = +pointTranlate.slice(pointCommaPos+1,pointClosePos);
-            
+
           var height = $(chart).find("g.nvd3.nv-wrap").first().find("rect").first().attr("height"),
               width = $(chart).find("g.nvd3.nv-wrap").first().find("rect").first().attr("width");
-        
+
           var svg = d3.select(chart + " .nvd3svg");
-        
+
           svg.call(tip);
-        
+
           svg.append("rect")
               .attr("x",xPoint + xTrans)
               .attr("y",yTrans - 5)
@@ -934,7 +934,7 @@ var alamode = {
               .attr("class","flag")
               .attr("height",yPoint + 5)
               .attr("fill","#ff8f53");
-        
+
           svg.append("circle")
               .data([c])
               .attr("cx",xPoint + xTrans)
@@ -949,20 +949,20 @@ var alamode = {
 
           if (orientation == "h") {
             y = "";
-          } else if ("h-left") { 
-            y = "1"; 
-          } else { 
-            y = "2"; 
+          } else if ("h-left") {
+            y = "1";
+          } else {
+            y = "2";
           }
 
           var ticks = $(chart).find("g.nv-y" + y + ".nv-axis").find(".tick");
-        
+
           ticks.each(function(t) {
-            
+
             if (orientation == "h-right") {
               lineLength = +$(chart).find("g.nv-y1.nv-axis").find(".tick").first().find("line").attr("x2");
             } else {
-              lineLength = +$(this).find("line").attr("x2");  
+              lineLength = +$(this).find("line").attr("x2");
             }
 
             tickTrans = $(this).attr("transform");
@@ -970,10 +970,10 @@ var alamode = {
             tickCommaPos = tickTrans.indexOf(",");
 
             if (t == 0) {
-            
+
               yTrans1 = +tickTrans.slice(tickCommaPos+1,tickClosePos);
               yVal1 = +$(this).find("text").text().replace(",","");
-            
+
             } else if (t == 1) {
 
               // Get y of second tick;
@@ -1017,18 +1017,18 @@ var alamode = {
       d3.select(chart).selectAll(".flag").remove();
       drawComments()
     },1000);
-  
+
     $(window).resize(function () {
       d3.select(chart).selectAll(".flag").remove();
-      
+
       waitForFinalEvent(function(){
         drawComments()
       }, 500, "");
     });
-  
+
     var waitForFinalEvent = (function () {
       var timers = {};
-      
+
       return function (callback, ms, uniqueId) {
         if (!uniqueId) {
           uniqueId = "Don't call this twice without a uniqueId";
@@ -1040,13 +1040,13 @@ var alamode = {
       };
     })();
   },
-  
+
   // Modified NVD3 bullet chart
-  // http://nvd3-community.github.io/nvd3/ 
+  // http://nvd3-community.github.io/nvd3/
   bulletChart: function(o) {
-    
+
     var id = alamode.makeId(10);
-        
+
     var queryName = o["query_name"],
         // Optional
         htmlElement = o["html_element"] || "body",
@@ -1055,34 +1055,34 @@ var alamode = {
         barLabel = o["bar_column"] || "",
         markerLabel = o["marker_column"] || "",
         leftpad = o["left_pad"] || 150;
-        
+
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
         .text(title)
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-bullet-chart")
         .style("width",width)
         .attr("id",id);
-    
+
     data.forEach(function(d) {
       var title = d[o["title_column"]] || "",
           subtitle = d[o["subtitle_column"]] || "",
           marker = d[o["marker_column"]] || "",
           bar = d[o["bar_column"]] || "";
-      
+
       if (o["scale_columns"]) {
         scale = [d[o["scale_columns"][0]],d[o["scale_columns"][1]],d[o["scale_columns"][2]]];
       } else {
         scale = o["scale_columns"];
       }
-      
+
       var bulletData = {
         "title": title,
         "subtitle": subtitle,
@@ -1092,13 +1092,13 @@ var alamode = {
         "markers": [marker],
         "markerLabels": [markerLabel]
       }
-      
-      nv.addGraph(function() {  
+
+      nv.addGraph(function() {
         var chart = nv.models.bulletChart()
             .height(50)
             .width(width)
             .margin({"left":leftpad,"right":15,"top":10,"bottom":10});
-        
+
         var svg = d3.select("#" + id)
             .append("svg")
             .style("width",width + "px")
@@ -1109,78 +1109,77 @@ var alamode = {
             .call(chart);
 
         return chart;
-      })  
+      })
     })
   },
-  
+
   // Modified from Kerry Rodden's "sequence sunburst"
   // https://bl.ocks.org/kerryrodden/7090426
   sunburstChart: function(o) {
     var id = alamode.makeId(10);
-    
+
     var queryName = o["query_name"],
         eventColumns = o["event_columns"],
         valueColumn = o["event_counts"],
+        colorRange = o["color_range"] || ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"],
         // Optional
         title = o["title"] || queryName,
         htmlElement = o["html_element"] || "body";
-    
+
     var data = alamode.getDataFromQuery(queryName);
-    
+
     var height = 600,
         width = 650,
         radius = Math.min(width, height) / 2,
         breadcrumbWidth = (width - 50)/eventColumns.length,
         b = { w: breadcrumbWidth, h: 30, s: 3, t: 10 };
-    
+
     var fullEventList = [];
-    
+
     eventColumns.forEach(function(e) {
       fullEventList = fullEventList.concat(_.uniq(_.map(data,e)));
     })
-    
-    var events = _.uniq(fullEventList)
 
-    var colorRange = ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"];
+    var events = _.uniq(fullEventList)
 
     var colors = {}
 
     events.forEach(function(e,i) {
-      if (e != null) { colors[e] = colorRange[i % 18]; }
+      if (e != null) { colors[e] = colorRange[i % (colorRange.length * 2)]; }
     })
 
     colors["end"] = "#666"
-    
-    var totalSize = 0; 
+
+    var totalSize = 0;
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
         .text(title)
-    
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-sunburst-sequence")
         .attr("id","sequence-" + id)
-      
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-sunburst")
         .attr("id",id)
-    
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-sunburst-legend-container")
         .attr("id","legend-container-" + id)
-        
+
     vis = d3.select("#" + id).append("svg:svg")
         .attr("width", width)
         .attr("height", height)
       .append("svg:g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-    
+
     vis.append("text")
         .attr("x",0)
         .attr("y",-30)
@@ -1189,7 +1188,7 @@ var alamode = {
         .attr("id","percentage-" + id)
         .style("visibility","hidden")
         .text("");
-    
+
     vis.append("text")
         .attr("x",0)
         .attr("y",-10)
@@ -1197,7 +1196,7 @@ var alamode = {
         .attr("class","mode-sunburst-explanation")
         .style("visibility","hidden")
         .text("of total sequences.")
-    
+
     vis.append("text")
         .attr("x",0)
         .attr("y",20)
@@ -1206,7 +1205,7 @@ var alamode = {
         .attr("id","cond-percentage-" + id)
         .style("visibility","hidden")
         .text("")
-    
+
     vis.append("text")
         .attr("x",0)
         .attr("y",40)
@@ -1214,7 +1213,7 @@ var alamode = {
         .attr("class","mode-sunburst-explanation")
         .style("visibility","hidden")
         .text("from previous location.")
-    
+
     var partition = d3.layout.partition()
         .size([2 * Math.PI, radius * radius])
         .value(function(d) { return d.size; });
@@ -1229,11 +1228,11 @@ var alamode = {
 
     data.forEach(function(d) {
       var sequence = "";
-      
+
       for (i=0; i<eventColumns.length; i++) {
-        
+
         if (i != 0) { prefix = "-~-"; } else { prefix = ""; }
-        
+
         if (d[eventColumns[i]] == null) {
           sequence = sequence + prefix + "end";
           break;
@@ -1241,9 +1240,9 @@ var alamode = {
           sequence = sequence + prefix + d[eventColumns[i]];
         }
       }
-  
+
       var ent = {0:sequence, 1:d[valueColumn]}
-  
+
       formattedData.push(ent)
     })
 
@@ -1252,7 +1251,7 @@ var alamode = {
     createVisualization(json);
 
     function createVisualization(json) {
- 
+
       initializeBreadcrumbTrail();
       drawLegend();
 
@@ -1281,13 +1280,13 @@ var alamode = {
     };
 
     function mouseover(d) {
-    
+
       var percentage = (100 * d.value / totalSize).toPrecision(3);
       var percentageString = percentage + "%";
       if (percentage < 0.1) {
         percentageString = "< 0.1%";
       }
-      
+
       //Calculate conditional percentage
       var sequenceArray = getAncestors(d);
       var parent_conditional_value = d.parent.value;
@@ -1296,22 +1295,22 @@ var alamode = {
         if (cond_percentage < 1.0) {
         percentageString = "< 1%";
       }
-      
+
       d3.select("#cond-percentage-" + id)
           .text(cond_percentageString);
-      
+
       d3.select("#percentage-" + id)
           .text(percentageString);
-    
+
       d3.selectAll(".mode-sunburst-explanation")
           .style("visibility", "");
-    
+
       var sequenceArray = getAncestors(d);
       updateBreadcrumbs(sequenceArray, percentageString);
-    
+
       d3.selectAll("path")
           .style("opacity", 0.3);
-    
+
       vis.selectAll("path")
           .filter(function(node) {
                     return (sequenceArray.indexOf(node) >= 0);
@@ -1320,10 +1319,10 @@ var alamode = {
     }
 
     function mouseleave(d) {
-    
+
       d3.select("#trail-" + id)
           .style("visibility", "hidden");
-    
+
       d3.selectAll("path").on("mouseover", null);
 
       // Compatibility for d3 v3 and v4
@@ -1344,7 +1343,7 @@ var alamode = {
               d3.select(this).on("mouseover", mouseover);
             })
       }
-    
+
       d3.selectAll(".mode-sunburst-explanation")
           .style("visibility", "hidden");
     }
@@ -1364,7 +1363,7 @@ var alamode = {
           .attr("width", width)
           .attr("height", 50)
           .attr("id", "trail-" + id);
-          
+
       trail.append("svg:text")
         .attr("id", "endlabel")
         .style("fill", "#000");
@@ -1377,65 +1376,65 @@ var alamode = {
       points.push(b.w + b.t + "," + (b.h / 2));
       points.push(b.w + "," + b.h);
       points.push("0," + b.h);
-      if (i > 0) { 
+      if (i > 0) {
         points.push(b.t + "," + (b.h / 2));
       }
       return points.join(" ");
     }
 
     function updateBreadcrumbs(nodeArray, percentageString) {
-    
+
       var g = d3.select("#trail-" + id)
           .selectAll("g")
           .data(nodeArray, function(d) { return d.name + d.depth; });
-    
+
       var entering = g.enter().append("svg:g");
-    
+
       entering.append("svg:polygon")
           .attr("points", breadcrumbPoints)
           .style("fill", function(d) { return colors[d.name]; });
-    
+
       entering.append("svg:text")
           .attr("x", (b.w + b.t) / 2)
           .attr("y", b.h / 2)
           .attr("dy", "0.35em")
           .attr("text-anchor", "middle")
           .text(function(d) { return d.name; });
-    
+
       g.attr("transform", function(d, i) {
         return "translate(" + i * (b.w + b.s) + ", 0)";
       });
-    
+
       g.exit().remove();
-    
+
       d3.select("#trail-" + id)
           .style("visibility", "");
     }
-    
+
     function drawLegend() {
-    
+
       var li = {
         w: 195, h: 30, s: 3, r: 3
       };
-      
+
       d3.entries(colors).forEach(function(c) {
-        
+
         divContainer = d3.select("#legend-container-" + id)
             .append("div")
             .attr("class","mode-sunburst-legend")
             .attr("id","legend-" + id)
-        
+
         svg = divContainer.append("svg:svg")
             .attr("width", li.w)
             .attr("height", li.h);
-    
+
         svg.append("svg:rect")
             .attr("rx", li.r)
             .attr("ry", li.r)
             .attr("width", li.w)
             .attr("height", li.h)
             .style("fill", function() { return c.value; });
-    
+
         svg.append("svg:text")
             .attr("x", li.w / 2)
             .attr("y", li.h / 2)
@@ -1443,10 +1442,10 @@ var alamode = {
             .attr("text-anchor", "middle")
             .text(function() { return c.key; });
       })
-        
+
     }
-    
-    
+
+
     function buildHierarchy(csv) {
       var root = {"name": "root", "children": []};
       for (var i = 0; i < csv.length; i++) {
@@ -1462,7 +1461,7 @@ var alamode = {
           var nodeName = parts[j];
           var childNode;
           if (j + 1 < parts.length) {
-      
+
       var foundChild = false;
       for (var k = 0; k < children.length; k++) {
         if (children[k]["name"] == nodeName) {
@@ -1471,14 +1470,14 @@ var alamode = {
           break;
         }
       }
-      
+
       if (!foundChild) {
         childNode = {"name": nodeName, "children": []};
         children.push(childNode);
       }
       currentNode = childNode;
           } else {
-      
+
       childNode = {"name": nodeName, "size": size};
       children.push(childNode);
           }
@@ -1492,7 +1491,7 @@ var alamode = {
   // https://bl.ocks.org/mbostock/4060606
   countyChoropleth: function(o) {
     var id = alamode.makeId(10);
-    
+
     var queryName = o["query_name"],
         countyColumn = o["county_id_column"],
         valueColumn = o["value_column"],
@@ -1503,7 +1502,7 @@ var alamode = {
         valueRange = o["color_range"],
         colors = o["color_gradient"] || ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"],
         htmlElement = o["html_element"] || "body";
-    
+
     var data = alamode.getDataFromQuery(queryName);
 
     var rateById = d3.map();
@@ -1514,14 +1513,14 @@ var alamode = {
 
     var path = d3.geoPath()
         .projection(projection);
-    
+
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-    
+
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
         .text(title)
-    
+
     svg = d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-county-chorolpleth")
@@ -1533,7 +1532,7 @@ var alamode = {
     data.forEach( function(d) {
       rateById.set(d[countyColumn],+d[valueColumn]);
     })
-    
+
     if (!valueRange) {
       colorDomain = d3.extent(data, function(d) { return d[valueColumn]; });
     } else {
@@ -2114,7 +2113,7 @@ var alamode = {
       d["source_id"] = nameMap[d.source];
       d["target_id"] = nameMap[d.target];
     })
-    
+
     var x = d3.scale.ordinal().rangeBands([0, width]);
 
     var z = d3.scale.linear()
@@ -2153,7 +2152,7 @@ var alamode = {
         .attr("height", height + margin.top + margin.bottom);
 
     svg.call(tip);
-    
+
     var g = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -2171,7 +2170,7 @@ var alamode = {
 
     graph.links.forEach(function(link) {
       if (typeof(matrix[link.source_id][link.target_id]) !== "undefined") {
-        matrix[link.source_id][link.target_id].z += link.edge_size;    
+        matrix[link.source_id][link.target_id].z += link.edge_size;
         nodes[link.source_id].count += link.edge_size;
         nodes[link.target_id].count += link.edge_size;
       } else {
@@ -2195,7 +2194,7 @@ var alamode = {
         .attr("y",25)
         .attr("text-anchor","middle")
         .text(topLabel)
-    
+
     svg.append("text")
         .attr("class","mode-network-matrix-axis-label")
         .attr("x",(height + margin.top + margin.bottom) / -2)
