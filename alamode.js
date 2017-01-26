@@ -1121,9 +1121,9 @@ var alamode = {
     var queryName = o["query_name"],
         eventColumns = o["event_columns"],
         valueColumn = o["event_counts"],
-        colorRange = o["color_range"] || ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"],
-        // Optional
+                // Optional
         title = o["title"] || queryName,
+        colorRange = o["color_range"] || ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"],
         htmlElement = o["html_element"] || "body";
 
     var data = alamode.getDataFromQuery(queryName);
@@ -1143,6 +1143,7 @@ var alamode = {
     var events = _.uniq(fullEventList)
 
     var colors = {}
+
 
     events.forEach(function(e,i) {
       if (e != null) { colors[e] = colorRange[i % (colorRange.length * 2)]; }
