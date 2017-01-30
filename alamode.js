@@ -1144,9 +1144,8 @@ var alamode = {
 
     var colors = {}
 
-
     events.forEach(function(e,i) {
-      if (e != null) { colors[e] = colorRange[i % (colorRange.length * 2)]; }
+      if (e != null) { colors[e] = colorRange[i % (colorRange.length)]; }
     })
 
     colors["end"] = "#666"
