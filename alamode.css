@@ -145,9 +145,17 @@ h1.mode-error {
   font-size: 1.8em;
   color: #666;
 }
+/*Zipcode choropleth*/
+.mode-zipcode-chorolpleth{
+  text-align: center;
+}
+
+.zipcodes{
+  fill: none;
+}
 
 /*County choropleth*/
-.mode-county-chorolpleth {
+.mode-county-chorolpleth{
   text-align: center;
 }
 
