@@ -2744,23 +2744,29 @@ var alamode = {
     }
   },
 
-  linkingWithinReport: function(o){
+  addTableOfContents: function(o){
     var textColor = o["text_color"],
         backgroundColor = o["background_color"],
         hoverColor = o["hover_color"];
 
     $(".mode-header").addClass('has-nav');
-    var nav = $("<nav class='fixed-nav-bar'></nav>");
+    var nav = $("<nav class='fixed-nav-bar'></nav>")
     $(".row").each(function() {
-      var chartId = $(this).find('mode-chart').attr('id') || $(this).find('mode-table').attr('id') || $(this).find('mode-python').attr('id');
-      var title;
-      if(chartId.includes("chart") || chartId.includes("table")){
-        title = document.getElementById(chartId).getElementsByClassName("chart-title")[0].innerText;
-      }else if(chartId.includes("python")){
-        title = document.getElementById(chartId).getElementsByClassName("in-place-edit-text")[0].innerText;
-      }
-      var newlink = $("<a class='scroll-link' href=" + '#' + chartId + ">" + (title.includes("Click to add title") ? "Untitled" : title) + "</a>");
-      nav.append(newlink);
+      var cols = $(this).children();
+      cols.each(function() {
+        var title;
+        var chartId = $(this).find('mode-chart').attr('id') || $(this).find('mode-table').attr('id') || $(this).find('mode-python').attr('id');
+        if (!chartId) {
+          return true;
+        }
+        if (chartId.includes("chart") || chartId.includes("table")) {
+          title = document.getElementById(chartId).getElementsByClassName("chart-title")[0].innerText;
+        } else if (chartId.includes("python")) {
+          title = document.getElementById(chartId).getElementsByClassName("in-place-edit-text")[0].innerText;
+        }
+        var newlink = $("<a class='scroll-link' href=" + '#' + chartId + ">" + (title.includes("Click to add title") ? "Untitled" : title) + "</a>")
+        nav.append(newlink);
+      });
     });
     var newdiv = $("<div class='mode-grid container''></div>");
     $(".mode-content").prepend(newdiv);
@@ -2769,20 +2775,21 @@ var alamode = {
     var newcol = $("<div class='col-md-12'></div>")
     newrow.prepend(newcol);
     newcol.prepend(nav);
-    if (!!textColor){
+    if (!!textColor) {
       $(".fixed-nav-bar a").css("color", textColor);
     }
-    if(!!backgroundColor){
+    if (!!backgroundColor) {
       $(".fixed-nav-bar").css("background-color", backgroundColor);
     }
-    if(!!hoverColor){
+    if (!!hoverColor) {
       $(".fixed-nav-bar a").hover(
-         function() {
+        function() {
           $(this).css("color", hoverColor);
-        }, function() {
-          if(!!textColor){
+        },
+        function() {
+          if (!!textColor) {
             $(this).css("color", textColor);
-          }else{
+          } else {
             $(this).css("color", "");
           }
         }
@@ -2794,13 +2801,14 @@ var alamode = {
         var sectionID = $(this).attr("href");
         scrollToID(sectionID, 750);
       });
+
       function scrollToID(id, speed) {
         var offSet = 50;
         var targetOffset = $(id).offset().top - offSet;
         $('html,body').animate({
           scrollTop: targetOffset
         }, speed);
-      }
-    }, 100);
+        }
+     }, 100);
   }
 }
