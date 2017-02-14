@@ -297,3 +297,41 @@ h1.mode-error {
 .mode-hive-node-selected {
   stroke-width: 3px;
 }
+
+.fixed-nav-bar {
+  position: fixed;
+  top: 4px;
+  z-index: 9999;
+  background-color: white;
+  padding: 0;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  font-size: 0;
+}
+
+.fixed-nav-bar a {
+  padding: 6px 10px;
+  display: inline-block;
+  font-weight: 500;
+  font-size: 13px;
+  color: rgb(78, 77, 77);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fixed-nav-bar a:hover {
+  color: #f27802;
+  text-decoration: none;
+}
+
+.fixed-nav-bar a:last-child {
+  border-radius: 0 3px 3px 0;
+  border-right: none;
+}
+
+.fixed-nav-bar a:first-child {
+  border-radius: 3px 0 0 3px;
+}
+
+.has-nav {
+  padding-top: 3em;
+}
