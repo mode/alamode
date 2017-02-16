@@ -2814,5 +2814,64 @@ var alamode = {
         }, speed);
         }
      }, 100);
+  },
+
+  addLinksToBarCharts: function(o) {
+
+    var data = alamode.getDataFromQuery(queryName);
+
+    var chartId = o["bar_chart_id"],
+        linkColumn = o["link_column"],
+        linkURLs = o["link_urls"],
+        seriesCount = linkURLs.length,
+        barsCount = 0,
+        urlArray = [],
+        colCount = data.length;
+
+
+    setTimeout(function() {
+      var chart = document.getElementById(chartId);
+      d3.select(chart).selectAll(".nv-groups rect").attr("id", function(d, i){
+        barsCount++;
+        return i;
+      });
+
+      for (i = 0; i < seriesCount; i++) {
+        for (j = 0; j < barsCount / seriesCount; j++) {
+          urlArray.push(linkURLs[i]);
+        }
+      }
+
+      $(chart).find(".nv-groups rect").hover(function() {
+        $(this).css("cursor", "pointer");
+      });
+
+      $(".nv-groups rect").click(function() {
+        var rowIndex;
+        if (this.id >= colCount) {
+          rowIndex = this.id % colCount;
+        } else {
+          rowIndex = this.id;
+        }
+
+        var column = data[rowIndex][linkColumn];
+
+        while (urlArray[this.id].indexOf("{{") != -1) {
+          var chars = urlArray[this.id].length,
+              start = urlArray[this.id].indexOf("{{"),
+              end = urlArray[this.id].substring(start + 2, chars).indexOf("}}"),
+              cName = urlArray[this.id].substring(start + 2, start + end + 2),
+              full = urlArray[this.id].substring(start, start + end + 4),
+              content = column;
+
+          urlArray[this.id] = urlArray[this.id].replace(full, content);
+        }
+        
+        var link = document.createElement('a');
+        link.href = urlArray[this.id];
+        $(this).append(link);
+        link.click();
+      });
+    }, 100);
   }
 }
