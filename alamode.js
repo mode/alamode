@@ -2547,7 +2547,7 @@ var alamode = {
 
           if (r.type == "gradient") {
             drawGradient(c.column, r.color, colorText)
-          } else if (r.type == "above" || r.type == "below") {
+          } else if (r.type == "above" || r.type == "below" || r.type == "equal") {
             drawThreshold(c.column, r.type, r.value, r.color, colorText)
           }
         })
@@ -2587,6 +2587,8 @@ var alamode = {
         if (type == "above" && d[column] >= threshold) {
           if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
         } else if (type == "below" && d[column] <= threshold) {
+          if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
+        } else if (type == "equal" && d[column] == threshold){
           if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
         }
       })
@@ -2667,7 +2669,7 @@ var alamode = {
 
         if (r.type == "gradient" ) {
           drawGradient(r.color, colorText)
-        } else if (r.type == "above" || r.type == "below") {
+        } else if (r.type == "above" || r.type == "below" || r.type == "equal") {
           drawThreshold(r.type, r.value, r.color, colorText)
         }
       })
@@ -2710,6 +2712,8 @@ var alamode = {
           if (type == "above" && d[c] >= threshold) {
             if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
           } else if (type == "below" && d[c] <= threshold) {
+            if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
+          } else if (type == "equal" && d[c] == threshold) {
             if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
           }
 
