@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.11";
+var version = "0.12";
 
 var alamode = {
 
@@ -2774,6 +2774,11 @@ var alamode = {
   },
 
   addTableOfContents: function(o){
+
+    if (typeof(o) === 'undefined'){
+      o = 'default';
+    }
+
     var textColor = o["text_color"],
         backgroundColor = o["background_color"],
         hoverColor = o["hover_color"];
@@ -2789,7 +2794,12 @@ var alamode = {
           return true;
         }
         if (chartId.includes("chart") || chartId.includes("table")) {
-          title = document.getElementById(chartId).getElementsByClassName("chart-title")[0].innerText;
+          var element = document.getElementById(chartId);
+          if ($(element).find("mode-pivot-table").length > 0) {
+            title = document.getElementById(chartId).getElementsByClassName("in-place-edit-text")[0].innerText;
+          } else {
+            title = document.getElementById(chartId).getElementsByClassName("chart-title")[0].innerText;
+          }
         } else if (chartId.includes("python")) {
           title = document.getElementById(chartId).getElementsByClassName("in-place-edit-text")[0].innerText;
         }
