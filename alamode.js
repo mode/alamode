@@ -139,10 +139,12 @@ var alamode = {
           seriesCount = seriesGs.length,
           isArea = chart.find(".nv-areaWrap"),
           isBar = chart.find(".nv-barsWrap"),
+          isLine = chart.find(".nv-linesWrap"),
           legend = chart.find(".nv-series .nv-legend-symbol"),
           seriesLength = series.length - 1,
           isAreaLength = isArea.length,
-          isBarLength = isBar.length;
+          isBarLength = isBar.length,
+          isLineLength = isLine.length;
 
       var colors = {};
 
@@ -180,6 +182,16 @@ var alamode = {
       for (var i in colors) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"fill":colors[i],"stroke":colors[i] });
+        if (i == 0){
+          chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").each(function(index){
+              $(this).css({
+                "fill": colors[i],
+                "stroke": colors[i]
+              });
+            });
+          chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css({"fill": colors[1],"stroke": colors[1]});
+        }
+
         chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"fill":colors[i],"stroke":colors[i]}); });
@@ -188,6 +200,14 @@ var alamode = {
       for (var i in opacities) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} );
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"opacity":opacities[i]} );
+        if (i == 0){
+         chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").each(function(index){
+          $(this).css({
+          "opacity": opacities[i]
+          });
+         });
+         chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css({"opacity": opacities[1]});
+       }
         chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"opacity":opacities[i]} );
         chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"opacity":opacities[i]} );
         chart.find(".nv-pie .nv-slice").each(function(i) { $(this).css( {"opacity":opacities[i]} ); });
@@ -204,6 +224,11 @@ var alamode = {
             $(this).find("div").css({"background-color":colors[r[i]]});
           } else if ( isAreaLength > 0 || isBarLength > 0) {
             $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
+            if(isLineLength > 0){
+              $(this).find("div").css({
+                "background-color": colors[r[seriesLength - i]]
+              });
+            }
           } else {
             $(this).find("div").css({"background-color":colors[r[i]]});
           }
