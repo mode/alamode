@@ -182,15 +182,15 @@ var alamode = {
       for (var i in colors) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"fill":colors[i],"stroke":colors[i] });
-        if (i == 0){
-          chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").each(function(index){
+
+        chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").each(function(index){
               $(this).css({
-                "fill": colors[i],
-                "stroke": colors[i]
+                "fill": colors[0],
+                "stroke": colors[0]
               });
-            });
-          chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css({"fill": colors[1],"stroke": colors[1]});
-        }
+        });
+        chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css({"fill": colors[1],"stroke": colors[1]});
+
 
         chart.find(".nv-scatterWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
         chart.find(".nv-areaWrap .nv-area-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
