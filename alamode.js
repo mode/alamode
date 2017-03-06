@@ -222,16 +222,21 @@ var alamode = {
 
           if (legend.length == 0) {
             $(this).find("div").css({"background-color":colors[r[i]]});
-          } else if ( isAreaLength > 0 || isBarLength > 0) {
-            $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
-            if(isLineLength > 0){
+          } else if (isLineLength > 0 && isBarLength > 0) {
+            if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
               $(this).find("div").css({
-                "background-color": colors[r[seriesLength - i]]
+                "background-color": colors[r[seriesLength - i + 1]]
+              });
+            } else {
+              $(this).find("div").css({
+                "background-color": colors[r[seriesLength - i - 1]]
               });
             }
-          } else {
+           } else if ( isAreaLength > 0 || isBarLength > 0) {
+            $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
+           } else {
             $(this).find("div").css({"background-color":colors[r[i]]});
-          }
+           }
         })
 
         sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
