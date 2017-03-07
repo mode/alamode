@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.12";
+var version = "0.13";
 
 var alamode = {
 
