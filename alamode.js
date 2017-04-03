@@ -1159,10 +1159,10 @@ var alamode = {
     var data = alamode.getDataFromQuery(queryName);
 
     var height = 600,
-        width = 650,
+        width = 850,
         radius = Math.min(width, height) / 2,
-        breadcrumbWidth = (width - 50)/eventColumns.length,
-        b = { w: breadcrumbWidth, h: 30, s: 3, t: 10 };
+        breadcrumbWidth = (width - 50)/eventColumns.length*3,
+        b = { w: breadcrumbWidth, h: 20, s: 3, t: 10 };
 
     var fullEventList = [];
 
@@ -1391,7 +1391,7 @@ var alamode = {
     function initializeBreadcrumbTrail() {
       var trail = d3.select("#sequence-" + id).append("svg:svg")
           .attr("width", width)
-          .attr("height", 50)
+          .attr("height", 60)
           .attr("id", "trail-" + id);
 
       trail.append("svg:text")
@@ -1432,7 +1432,15 @@ var alamode = {
           .text(function(d) { return d.name; });
 
       g.attr("transform", function(d, i) {
-        return "translate(" + i * (b.w + b.s) + ", 0)";
+        if (i > 3 && i < 8){
+          i = i - 4;
+          return "translate(" + i * (b.w + b.s) + ", 20)";
+        }else if (i > 8){
+          i = i - 9;
+          return "translate(" + i * (b.w + b.s) + ", 40)";
+        }else{
+          return "translate(" + i * (b.w + b.s) + ", 0)";
+        }
       });
 
       g.exit().remove();
