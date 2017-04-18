@@ -230,14 +230,14 @@ var alamode = {
             legend = data.legend,
             colors = data.colors,
             r = data.r,
-            seriesLength = chart.find(".nvtooltip table .legend-color-guide").length - 1,
+            seriesLength = $("html").find(".nvtooltip table .legend-color-guide").length - 1,
             isAreaLength = isArea = chart.find(".nv-areaWrap").length,
             isBarLength = chart.find(".nv-barsWrap").length,
             isLineLength = chart.find(".nv-linesWrap").length;
 
-        chart.find(".nvtooltip table .legend-color-guide").each(function(i) {
+        $("html").find(".nvtooltip table .legend-color-guide").each(function(i) {
           if (legend.length == 0) {
-            $(this).find("div").css({"background-color":colors[r[i]]});
+            $(this).find("div").css({"background-color":colors[i]});
           } else if (isLineLength > 0 && isBarLength > 0) {
             if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
               $(this).find("div").css({
