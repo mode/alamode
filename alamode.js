@@ -134,7 +134,7 @@ var alamode = {
 
     function drawColors(id,colorList) {
       var chart = $("#" + id),
-          series = chart.find(".nvtooltip table .legend-color-guide"),
+          series = $("html").find(".nvtooltip table .legend-color-guide"),
           seriesGs = chart.find('.nv-groups g'),
           seriesCount = seriesGs.length,
           isArea = chart.find(".nv-areaWrap"),
@@ -218,10 +218,10 @@ var alamode = {
       }
 
       chart.find(".chart-svg").mousemove(function() {
-        chart.find(".nvtooltip table .legend-color-guide").each(function(i) {
+        $("html").find(".legend-color-guide").each(function(i) {
 
           if (legend.length == 0) {
-            $(this).find("div").css({"background-color":colors[r[i]]});
+            $(this).find("div").css({"background-color":colors[legend.length]});
           } else if (isLineLength > 0 && isBarLength > 0) {
             if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
               $(this).find("div").css({
