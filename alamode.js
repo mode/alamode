@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.13";
+var version = "0.14";
 
 var alamode = {
 
@@ -562,7 +562,8 @@ var alamode = {
         centerLat = o["center_lat"] || 39.5,
         centerLng = o["center_lng"] || -98.35,
         zoom = o["starting_zoom"] || 4,
-        mapType = o["map_type"] || "terrain";
+        mapType = o["map_type"] || "terrain",
+        mapHeight = o["height"] || 600;
 
     var data = alamode.getDataFromQuery(queryName);
 
@@ -577,6 +578,7 @@ var alamode = {
       .append("div")
       .attr("class","mode-google-map")
       .attr("id",id)
+      .style("height",mapHeight + "px")
 
     jQuery.getScript("https://maps.googleapis.com/maps/api/js?key=" + apiKey, function() {
 
