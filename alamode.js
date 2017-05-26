@@ -132,19 +132,11 @@ var alamode = {
       $("mode-chart").each(function(){ charts.push(this.id); });
     }
 
-    function drawColors(id,colorList) {
+    function prepColors(id, colorList) {
       var chart = $("#" + id),
-          series = chart.find(".nvtooltip table .legend-color-guide"),
           seriesGs = chart.find('.nv-groups g'),
           seriesCount = seriesGs.length,
-          isArea = chart.find(".nv-areaWrap"),
-          isBar = chart.find(".nv-barsWrap"),
-          isLine = chart.find(".nv-linesWrap"),
-          legend = chart.find(".nv-series .nv-legend-symbol"),
-          seriesLength = series.length - 1,
-          isAreaLength = isArea.length,
-          isBarLength = isBar.length,
-          isLineLength = isLine.length;
+          legend = chart.find(".nv-series .nv-legend-symbol");
 
       var colors = {};
 
@@ -178,6 +170,15 @@ var alamode = {
         m[i] = -1;
         }
       })
+
+      return {chart: chart, legend: legend, colors: colors, m: m, r: r};
+    }
+
+    function drawColors(id, colorList) {
+      var data = prepColors(id, colorList),
+          chart = data.chart,
+          colors = data.colors,
+          m = data.m;
 
       for (var i in colors) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
@@ -217,11 +218,26 @@ var alamode = {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"stroke-dasharray":lineDashes[i]} );
       }
 
-      chart.find(".chart-svg").mousemove(function() {
-        chart.find(".nvtooltip table .legend-color-guide").each(function(i) {
+      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) {
+        $(this).css({"fill":colors[i],"stroke":colors[i]});
+      })
+    }
 
+    function onMouseMove(id, colorList) {
+      var chart = $("#" + id);
+      chart.find(".chart-svg").mousemove(function() {
+        var data = prepColors(id, colorList),
+            legend = data.legend,
+            colors = data.colors,
+            r = data.r,
+            seriesLength = $("html").find(".nvtooltip table .legend-color-guide").length - 1,
+            isAreaLength = isArea = chart.find(".nv-areaWrap").length,
+            isBarLength = chart.find(".nv-barsWrap").length,
+            isLineLength = chart.find(".nv-linesWrap").length;
+
+        $("html").find(".nvtooltip table .legend-color-guide").each(function(i) {
           if (legend.length == 0) {
-            $(this).find("div").css({"background-color":colors[r[i]]});
+            $(this).find("div").css({"background-color":colors[i]});
           } else if (isLineLength > 0 && isBarLength > 0) {
             if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
               $(this).find("div").css({
@@ -239,12 +255,8 @@ var alamode = {
            }
         })
 
-        sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
+        var sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
         chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
-      })
-
-      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) {
-        $(this).css({"fill":colors[i],"stroke":colors[i]});
       })
     }
 
@@ -253,6 +265,10 @@ var alamode = {
         drawColors(c,colors)
       })
     }, 500)
+
+    charts.forEach(function(c) {
+      onMouseMove(c, colors);
+    })
   },
 
   addTotalsRow: function(o) {
