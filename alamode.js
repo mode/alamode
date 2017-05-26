@@ -113,7 +113,7 @@ var alamode = {
               url = url.replace(full,content);
             }
 
-            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "' target='_blank'>" + cellContent + "</a>")
           })
         }
       })
