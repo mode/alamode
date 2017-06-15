@@ -1894,7 +1894,9 @@ var alamode = {
         aggregator = o["aggregate_function"] || "Count",
         selectedRenderer = o["pivot_table_type"] || "Table",
         title = o["default_column_value"] || queryName,
-        htmlElement = o["html_element"] || "body";
+        htmlElement = o["html_element"] || "body",
+        defaultExclusions = o["default_exclusions"] || [],
+        defaultInclusions = o["default_inclusions"] || [];
 
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
@@ -1929,7 +1931,9 @@ var alamode = {
           rows: defaultRows,
           aggregatorName: aggregator,
           vals: [defaultValues],
-          rendererName: selectedRenderer
+          rendererName: selectedRenderer,
+          exclusions: defaultExclusions,
+          inclusions: defaultInclusions
         }
       )
     } else {
@@ -1942,7 +1946,9 @@ var alamode = {
           cols: defaultColumns,
           rows: defaultRows,
           aggregator: agg([defaultValues]),
-          renderer: render
+          renderer: render,
+          exclusions: defaultExclusions,
+          inclusions: defaultInclusions
         }
       )
     }
