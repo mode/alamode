@@ -81,7 +81,7 @@ var alamode = {
 
       var tableDiv = $(tableId + " table"),
           tableHeader = $(tableId + " .js-header-table"),
-          headers = tableHeader.find("th"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
           rows = tableDiv.find("tr"),
           columnIndex = 0;
 
