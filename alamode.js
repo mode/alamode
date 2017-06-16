@@ -81,7 +81,7 @@ var alamode = {
 
       var tableDiv = $(tableId + " table"),
           tableHeader = $(tableId + " .js-header-table"),
-          headers = tableHeader.find("th"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
           rows = tableDiv.find("tr"),
           columnIndex = 0;
 
@@ -1179,7 +1179,7 @@ var alamode = {
     var height = 600,
         width = 850,
         radius = Math.min(width, height) / 2,
-        breadcrumbWidth = (width - 50)/eventColumns.length*3,
+        breadcrumbWidth = (width - 30)/eventColumns.length,
         b = { w: breadcrumbWidth, h: 20, s: 3, t: 10 };
 
     var fullEventList = [];
@@ -1450,11 +1450,11 @@ var alamode = {
           .text(function(d) { return d.name; });
 
       g.attr("transform", function(d, i) {
-        if (i > 3 && i < 8){
-          i = i - 4;
+        if (i > 5 && i < 10){
+          i = i - 5;
           return "translate(" + i * (b.w + b.s) + ", 20)";
-        }else if (i > 8){
-          i = i - 9;
+        }else if (i > 10){
+          i = i - 11;
           return "translate(" + i * (b.w + b.s) + ", 40)";
         }else{
           return "translate(" + i * (b.w + b.s) + ", 0)";
