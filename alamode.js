@@ -371,8 +371,9 @@ var alamode = {
     function drawImages() {
       var tableDiv = $(tableId + " table"),
           tableHeader = $(tableId + " .js-header-table"),
-          headers = tableHeader.find("th"),
-          rows = tableDiv.find("tr");
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
 
       headers.each(function() {
         text = $(this).find(".axel-table-header-label").text()
