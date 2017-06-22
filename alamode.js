@@ -2574,18 +2574,6 @@ var alamode = {
 
     var colIndex = {};
 
-    var tableDiv = $(tableId + " table"),
-        tableHeader = $(tableId + " .js-header-table"),
-        headers = tableHeader.find("th"),
-        rows = tableDiv.find("tr"),
-        columnIndex = 0;
-
-    headers.each(function() {
-      text = $(this).find(".axel-table-header-label").text()
-      columnIndex = $(this).attr("data-axel-column")
-      colIndex[text] = columnIndex;
-    })
-
     setTimeout(function(){
       shade(columnRules)
     },1000)
@@ -2595,6 +2583,18 @@ var alamode = {
     })
 
     function shade(columnRules) {
+
+      var tableDiv = $(tableId + " table"),
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        columnIndex = $(this).attr("data-axel-column")
+        colIndex[text] = columnIndex;
+      })
 
       columnRules.forEach(function(c) {
         c.rules.forEach(function(r) {
@@ -2688,18 +2688,6 @@ var alamode = {
 
     var colIndex = {};
 
-    var tableDiv = $(tableId + " table"),
-        tableHeader = $(tableId + " .js-header-table"),
-        headers = tableHeader.find("th"),
-        rows = tableDiv.find("tr"),
-        columnIndex = 0;
-
-    headers.each(function() {
-      text = $(this).find(".axel-table-header-label").text()
-      columnIndex = $(this).attr("data-axel-column")
-      colIndex[text] = columnIndex;
-    })
-
     var combinedRange = [];
 
     includedColumns.forEach(function(c) {
@@ -2718,6 +2706,18 @@ var alamode = {
     })
 
     function shade(rules) {
+
+      var tableDiv = $(tableId + " table"),
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        columnIndex = $(this).attr("data-axel-column")
+        colIndex[text] = columnIndex;
+      })
 
       rules.forEach(function(r) {
 
