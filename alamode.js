@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.13";
+var version = "0.14";
 
 var alamode = {
 
@@ -81,7 +81,7 @@ var alamode = {
 
       var tableDiv = $(tableId + " table"),
           tableHeader = $(tableId + " .js-header-table"),
-          headers = tableHeader.find("th"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
           rows = tableDiv.find("tr"),
           columnIndex = 0;
 
@@ -132,19 +132,11 @@ var alamode = {
       $("mode-chart").each(function(){ charts.push(this.id); });
     }
 
-    function drawColors(id,colorList) {
+    function prepColors(id, colorList) {
       var chart = $("#" + id),
-          series = $("html").find(".nvtooltip table .legend-color-guide"),
           seriesGs = chart.find('.nv-groups g'),
           seriesCount = seriesGs.length,
-          isArea = chart.find(".nv-areaWrap"),
-          isBar = chart.find(".nv-barsWrap"),
-          isLine = chart.find(".nv-linesWrap"),
-          legend = chart.find(".nv-series .nv-legend-symbol"),
-          seriesLength = series.length - 1,
-          isAreaLength = isArea.length,
-          isBarLength = isBar.length,
-          isLineLength = isLine.length;
+          legend = chart.find(".nv-series .nv-legend-symbol");
 
       var colors = {};
 
@@ -178,6 +170,15 @@ var alamode = {
         m[i] = -1;
         }
       })
+
+      return {chart: chart, legend: legend, colors: colors, m: m, r: r};
+    }
+
+    function drawColors(id, colorList) {
+      var data = prepColors(id, colorList),
+          chart = data.chart,
+          colors = data.colors,
+          m = data.m;
 
       for (var i in colors) {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"fill":colors[i],"stroke":colors[i] });
@@ -217,11 +218,26 @@ var alamode = {
         chart.find(".nv-linesWrap .nv-groups .nv-series-" + m[i]).css( {"stroke-dasharray":lineDashes[i]} );
       }
 
-      chart.find(".chart-svg").mousemove(function() {
-        $("html").find(".legend-color-guide").each(function(i) {
+      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) {
+        $(this).css({"fill":colors[i],"stroke":colors[i]});
+      })
+    }
 
+    function onMouseMove(id, colorList) {
+      var chart = $("#" + id);
+      chart.find(".chart-svg").mousemove(function() {
+        var data = prepColors(id, colorList),
+            legend = data.legend,
+            colors = data.colors,
+            r = data.r,
+            seriesLength = $("html").find(".nvtooltip table .legend-color-guide").length - 1,
+            isAreaLength = isArea = chart.find(".nv-areaWrap").length,
+            isBarLength = chart.find(".nv-barsWrap").length,
+            isLineLength = chart.find(".nv-linesWrap").length;
+
+        $("html").find(".nvtooltip table .legend-color-guide").each(function(i) {
           if (legend.length == 0) {
-            $(this).find("div").css({"background-color":colors[legend.length]});
+            $(this).find("div").css({"background-color":colors[i]});
           } else if (isLineLength > 0 && isBarLength > 0) {
             if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
               $(this).find("div").css({
@@ -239,12 +255,8 @@ var alamode = {
            }
         })
 
-        sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
+        var sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
         chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
-      })
-
-      chart.find(".nv-legendWrap .nv-series .nv-legend-symbol").each(function(i) {
-        $(this).css({"fill":colors[i],"stroke":colors[i]});
       })
     }
 
@@ -253,6 +265,10 @@ var alamode = {
         drawColors(c,colors)
       })
     }, 500)
+
+    charts.forEach(function(c) {
+      onMouseMove(c, colors);
+    })
   },
 
   addTotalsRow: function(o) {
@@ -355,8 +371,9 @@ var alamode = {
     function drawImages() {
       var tableDiv = $(tableId + " table"),
           tableHeader = $(tableId + " .js-header-table"),
-          headers = tableHeader.find("th"),
-          rows = tableDiv.find("tr");
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
 
       headers.each(function() {
         text = $(this).find(".axel-table-header-label").text()
@@ -562,7 +579,8 @@ var alamode = {
         centerLat = o["center_lat"] || 39.5,
         centerLng = o["center_lng"] || -98.35,
         zoom = o["starting_zoom"] || 4,
-        mapType = o["map_type"] || "terrain";
+        mapType = o["map_type"] || "terrain",
+        mapHeight = o["height"] || 600;
 
     var data = alamode.getDataFromQuery(queryName);
 
@@ -577,6 +595,7 @@ var alamode = {
       .append("div")
       .attr("class","mode-google-map")
       .attr("id",id)
+      .style("height",mapHeight + "px")
 
     jQuery.getScript("https://maps.googleapis.com/maps/api/js?key=" + apiKey, function() {
 
@@ -1159,10 +1178,10 @@ var alamode = {
     var data = alamode.getDataFromQuery(queryName);
 
     var height = 600,
-        width = 650,
+        width = 850,
         radius = Math.min(width, height) / 2,
-        breadcrumbWidth = (width - 50)/eventColumns.length,
-        b = { w: breadcrumbWidth, h: 30, s: 3, t: 10 };
+        breadcrumbWidth = (width - 30)/eventColumns.length,
+        b = { w: breadcrumbWidth, h: 20, s: 3, t: 10 };
 
     var fullEventList = [];
 
@@ -1391,7 +1410,7 @@ var alamode = {
     function initializeBreadcrumbTrail() {
       var trail = d3.select("#sequence-" + id).append("svg:svg")
           .attr("width", width)
-          .attr("height", 50)
+          .attr("height", 60)
           .attr("id", "trail-" + id);
 
       trail.append("svg:text")
@@ -1432,7 +1451,15 @@ var alamode = {
           .text(function(d) { return d.name; });
 
       g.attr("transform", function(d, i) {
-        return "translate(" + i * (b.w + b.s) + ", 0)";
+        if (i > 5 && i < 10){
+          i = i - 5;
+          return "translate(" + i * (b.w + b.s) + ", 20)";
+        }else if (i > 10){
+          i = i - 11;
+          return "translate(" + i * (b.w + b.s) + ", 40)";
+        }else{
+          return "translate(" + i * (b.w + b.s) + ", 0)";
+        }
       });
 
       g.exit().remove();
@@ -1868,7 +1895,9 @@ var alamode = {
         aggregator = o["aggregate_function"] || "Count",
         selectedRenderer = o["pivot_table_type"] || "Table",
         title = o["default_column_value"] || queryName,
-        htmlElement = o["html_element"] || "body";
+        htmlElement = o["html_element"] || "body",
+        defaultExclusions = o["default_exclusions"] || [],
+        defaultInclusions = o["default_inclusions"] || [];
 
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
@@ -1903,7 +1932,9 @@ var alamode = {
           rows: defaultRows,
           aggregatorName: aggregator,
           vals: [defaultValues],
-          rendererName: selectedRenderer
+          rendererName: selectedRenderer,
+          exclusions: defaultExclusions,
+          inclusions: defaultInclusions
         }
       )
     } else {
@@ -1916,7 +1947,9 @@ var alamode = {
           cols: defaultColumns,
           rows: defaultRows,
           aggregator: agg([defaultValues]),
-          renderer: render
+          renderer: render,
+          exclusions: defaultExclusions,
+          inclusions: defaultInclusions
         }
       )
     }
@@ -2548,18 +2581,6 @@ var alamode = {
 
     var colIndex = {};
 
-    var tableDiv = $(tableId + " table"),
-        tableHeader = $(tableId + " .js-header-table"),
-        headers = tableHeader.find("th"),
-        rows = tableDiv.find("tr"),
-        columnIndex = 0;
-
-    headers.each(function() {
-      text = $(this).find(".axel-table-header-label").text()
-      columnIndex = $(this).attr("data-axel-column")
-      colIndex[text] = columnIndex;
-    })
-
     setTimeout(function(){
       shade(columnRules)
     },1000)
@@ -2569,6 +2590,18 @@ var alamode = {
     })
 
     function shade(columnRules) {
+
+      var tableDiv = $(tableId + " table"),
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        columnIndex = $(this).attr("data-axel-column")
+        colIndex[text] = columnIndex;
+      })
 
       columnRules.forEach(function(c) {
         c.rules.forEach(function(r) {
@@ -2662,18 +2695,6 @@ var alamode = {
 
     var colIndex = {};
 
-    var tableDiv = $(tableId + " table"),
-        tableHeader = $(tableId + " .js-header-table"),
-        headers = tableHeader.find("th"),
-        rows = tableDiv.find("tr"),
-        columnIndex = 0;
-
-    headers.each(function() {
-      text = $(this).find(".axel-table-header-label").text()
-      columnIndex = $(this).attr("data-axel-column")
-      colIndex[text] = columnIndex;
-    })
-
     var combinedRange = [];
 
     includedColumns.forEach(function(c) {
@@ -2692,6 +2713,18 @@ var alamode = {
     })
 
     function shade(rules) {
+
+      var tableDiv = $(tableId + " table"),
+          tableHeader = $(tableId + " .js-header-table"),
+          headers = !tableHeader ? $(tableHeader).find("th") : $(tableId + " .js-col-header"),
+          rows = tableDiv.find("tr"),
+          columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".axel-table-header-label").text()
+        columnIndex = $(this).attr("data-axel-column")
+        colIndex[text] = columnIndex;
+      })
 
       rules.forEach(function(r) {
 
