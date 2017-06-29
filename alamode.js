@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.14";
+var version = "0.15";
 
 var alamode = {
 
@@ -134,8 +134,8 @@ var alamode = {
 
     function prepColors(id, colorList) {
       var chart = $("#" + id),
-          seriesGs = chart.find('.nv-groups g'),
-          seriesCount = seriesGs.length,
+          series = chart.find('.nv-bar').length > 0 ? chart.find('.nv-group') : chart.find('.nv-line').length > 0 || chart.find('.nv-areaWrap').length > 0 ? chart.find('.nv-noninteractive') : chart.find('.nv-pie .nv-slice'),
+          seriesCount = series.length,
           legend = chart.find(".nv-series .nv-legend-symbol");
 
       var colors = {};
@@ -171,7 +171,7 @@ var alamode = {
         }
       })
 
-      return {chart: chart, legend: legend, colors: colors, m: m, r: r};
+      return {chart: chart, legend: legend, colors: colors, m: m, r: r, seriesCount: seriesCount};
     }
 
     function drawColors(id, colorList) {
@@ -185,10 +185,7 @@ var alamode = {
         chart.find(".nv-barsWrap .nv-groups .nv-series-" + m[i] + " rect").css( {"fill":colors[i],"stroke":colors[i] });
 
         chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").each(function(index){
-              $(this).css({
-                "fill": colors[0],
-                "stroke": colors[0]
-              });
+              $(this).css({"fill": colors[0],"stroke": colors[0]});
         });
         chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css({"fill": colors[1],"stroke": colors[1]});
 
@@ -225,39 +222,47 @@ var alamode = {
 
     function onMouseMove(id, colorList) {
       var chart = $("#" + id);
-      chart.find(".chart-svg").mousemove(function() {
+      $(chart).mousemove(function() {
         var data = prepColors(id, colorList),
             legend = data.legend,
             colors = data.colors,
             r = data.r,
-            seriesLength = $("html").find(".nvtooltip table .legend-color-guide").length - 1,
-            isAreaLength = isArea = chart.find(".nv-areaWrap").length,
-            isBarLength = chart.find(".nv-barsWrap").length,
-            isLineLength = chart.find(".nv-linesWrap").length;
+            m = data.m,
+            seriesCount = data.seriesCount,
+            isAreaLength = isArea = chart.find(".nv-area").length,
+            isBarLength = chart.find(".nv-bar").length,
+            isLineLength = chart.find(".nv-line").length;
 
         $("html").find(".nvtooltip table .legend-color-guide").each(function(i) {
-          if (legend.length == 0) {
-            $(this).find("div").css({"background-color":colors[i]});
+          if (legend.length == 0 && isBarLength == 0) {
+            $(this).find("div").css({"background-color":colors[m[i]]});
           } else if (isLineLength > 0 && isBarLength > 0) {
-            if ($(this).closest(".nvtooltip")[0].textContent.includes("right axis")) {
-              $(this).find("div").css({
-                "background-color": colors[r[seriesLength - i + 1]]
-              });
+            var lineColor = chart.find(".nv-linePlusBar .nv-linesWrap .nv-groups .nv-series-0").css("fill"),
+                barColor = chart.find(".nv-linePlusBar .nv-barsWrap .nv-bars rect").css("fill");
+            if ($(this).closest(".nvtooltip").find(".key")[0].innerText == "") {
+              $(this).find("div").css("background-color", barColor)
             } else {
-              $(this).find("div").css({
-                "background-color": colors[r[seriesLength - i - 1]]
-              });
+              $(this).find("div").css("background-color", lineColor);
             }
-           } else if ( isAreaLength > 0 || isBarLength > 0) {
-            $(this).find("div").css({"background-color":colors[r[seriesLength - i - 1]]});
+           } else if (isBarLength > 0) {
+             if (seriesCount == 1) {
+              $(this).find("div").css({"background-color": colors[r[seriesCount - i - 1]]});
+             }
+           } else if (isAreaLength > 0) {
+            $(this).find("div").css({"background-color": colors[isAreaLength - i - 1]});
            } else {
-            $(this).find("div").css({"background-color":colors[r[i]]});
+            $(this).find("div").css({"background-color":colors[i]});
            }
         })
 
         var sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
         chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
       })
+
+      $(chart).mouseleave(function() {
+       $("html").find(".nvtooltip table .legend-color-guide").remove();
+      })
+
     }
 
     setInterval(function () {
