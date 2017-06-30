@@ -256,7 +256,7 @@ var alamode = {
         })
 
         var sliceColor = chart.find(".nv-pie .nv-slice.hover").css("fill");
-        chart.find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
+        $("html").find(".nvtooltip table .legend-color-guide div").css("background-color",sliceColor)
       })
 
       $(chart).mouseleave(function() {
