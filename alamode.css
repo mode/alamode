@@ -154,6 +154,18 @@ h1.mode-error {
   fill: none;
 }
 
+.mode-zipcode-chorolpleth-legend{
+  text-align: center;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+}
+
+.mode-zipcode-chorolpleth-zipcodes:hover {
+  fill: red;
+}
+
+
 /*County choropleth*/
 .mode-county-chorolpleth{
   text-align: center;
@@ -178,6 +190,30 @@ h1.mode-error {
   fill: #666;
   stroke: #fff;
   stroke-linejoin: round;
+}
+
+.mode-state-chorolpleth-legend{
+  text-align: center;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+}
+
+.mode-state-chorolpleth-states-base {
+  fill: #C3CBCB;
+}
+
+.mode-state-chorolpleth-states:hover {
+  fill: red;
+}
+
+.mode-state-chorolpleth-tooltip {
+  line-height: 1;
+  font-weight: normal;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
 }
 
 /*World choropleth*/

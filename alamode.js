@@ -1581,7 +1581,9 @@ var alamode = {
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
-        .text(title)
+        .attr("class","mode-zipcode-chorolpleth-legend")
+        .attr("id","mode-zipcode-chorolpleth-legend-" + id)
+        .text("Hover over a Zipcode area to see details")
 
     svg = d3.select(uniqContainerClass)
         .append("div")
@@ -1619,13 +1621,23 @@ var alamode = {
         .enter().append("path")
           .attr("class","mode-zipcode-chorolpleth-zipcodes-" + id)
           .attr("fill", function(d) { return quantize(rateById.get(d.properties.zip)); })
-          .attr("d", path);
+          .attr("d", path)
+          .on("mouseover",function(d) {
+            d3.select(this).attr("class", "mode-zipcode-chorolpleth-zipcodes")
+            var zipcode = d.properties.zip;
 
-      // d3.select("#mode-county-chorolpleth-" + id)
-      //     .append("path")
-      //     .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-      //     .attr("class", "mode-county-chorolpleth-states")
-      //     .attr("d", path);
+            if (rateById.get(d.properties.zip)) {
+              value = rateById.get(d.properties.zip);
+            } else {
+              value = "--"
+            }
+
+            d3.select("#mode-zipcode-chorolpleth-legend-" + id).text(zipcode + ": " + value)
+          })
+          .on("mouseout",function(d) {
+            d3.select(this).classed("mode-zipcode-chorolpleth-zipcodes", false);
+            d3.select("#mode-zipcode-chorolpleth-legend-" + id).text("Hover over a state to see details")
+          })
     }
   },
 
@@ -1742,7 +1754,9 @@ var alamode = {
     d3.select(uniqContainerClass)
         .append("div")
         .attr("class","mode-graphic-title")
-        .text(title)
+        .attr("class","mode-state-chorolpleth-legend")
+        .attr("id","mode-state-chorolpleth-legend-" + id)
+        .text("Hover over a State to see details")
 
     svg = d3.select(uniqContainerClass)
         .append("div")
@@ -1774,13 +1788,29 @@ var alamode = {
 
       d3.select("#mode-state-chorolpleth-" + id)
           .append("g")
-          .attr("class","mode-state-chorolpleth-states")
+          .attr("class","mode-state-chorolpleth-states-base")
         .selectAll(".mode-state-chorolpleth-states-" + id)
           .data(us.features)
         .enter().append("path")
           .attr("class","mode-state-chorolpleth-states-" + id)
           .attr("fill", function(d) { return quantize(rateById.get(d.properties[code]))})
-          .attr("d", path);
+          .attr("d", path)
+          .on("mouseover",function(d) {
+            d3.select(this).attr("class", "mode-state-chorolpleth-states")
+            var state = d.properties.name;
+
+            if (rateById.get(d.properties[code])) {
+              value = rateById.get(d.properties[code]);
+            } else {
+              value = "--"
+            }
+
+            d3.select("#mode-state-chorolpleth-legend-" + id).text(state + ": " + value)
+          })
+          .on("mouseout",function(d) {
+            d3.select(this).classed("mode-state-chorolpleth-states", false);
+            d3.select("#mode-state-chorolpleth-legend-" + id).text("Hover over a state to see details")
+          })
     }
   },
 
