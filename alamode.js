@@ -1108,7 +1108,8 @@ var alamode = {
         width = o["chart_width"] || "800",
         barLabel = o["bar_column"] || "",
         markerLabel = o["marker_column"] || "",
-        leftpad = o["left_pad"] || 150;
+        leftpad = o["left_pad"] || 150,
+        color = o["color"];
 
     var data = alamode.getDataFromQuery(queryName);
 
@@ -1144,7 +1145,8 @@ var alamode = {
         "measures": [bar],
         "measureLabels": [barLabel],
         "markers": [marker],
-        "markerLabels": [markerLabel]
+        "markerLabels": [markerLabel],
+        "color": color
       }
 
       nv.addGraph(function() {
