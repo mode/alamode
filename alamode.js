@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.15";
+var version = "0.16";
 
 var alamode = {
 
@@ -303,12 +303,11 @@ var alamode = {
     }
 
     function makeSums(columnsWithSums) {
-      var sumObject = [],
-          emptyObj = {idx: i, name: "", total: ""};
+      var sumObject = [];
 
       resultColumns.forEach(function(c,i) {
         if (columnsWithSums.indexOf(c.name) == -1) {
-          var obj = emptyObj;
+          var obj = {idx: i, name: "", total: ""};
 
         } else {
           var values = _.map(data, c.name),
@@ -338,18 +337,22 @@ var alamode = {
     }
 
     setTimeout(function(){
-
       if (tableId == "#") {
         table = $(".main-table")
+        container = $(".js-table-content-container")
       } else {
         table = $(tableId + " .main-table")
+        container = $(tableId + " .js-table-content-container")
       }
 
       var lastRow = table.find("tr:last")
-
       var totalRow = makeRow(totals)
+      var tableHeight = container.css("height")
+      var tableHeightInt = +tableHeight.match(/\d+/)[0]
 
       lastRow.after(totalRow)
+
+      container.css("height",tableHeightInt + 26)
     },1000);
   },
 
