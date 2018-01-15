@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.16";
+var version = "0.17";
 
 var alamode = {
 
@@ -292,7 +292,7 @@ var alamode = {
     function getColumns(selectedColumns) {
 
       numberColumns = _.map(_.filter(resultColumns,function(c) {
-        return ["number","integer"].indexOf(c.type) != -1;
+        return ["number","integer","float"].indexOf(c.type) != -1;
       }),"name")
 
       if (selectedColumns == "all") {
