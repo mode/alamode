@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.17";
+var version = "0.18";
 
 var alamode = {
 
@@ -37,7 +37,9 @@ var alamode = {
     return text;
   },
 
-  addContainerElement: function(el) {
+  addContainerElement: function(el, clear) {
+
+    clear = clear || false;
 
     id = alamode.makeId(10);
 
@@ -46,8 +48,13 @@ var alamode = {
     } else if ($(el).length === 0) {
       alamode.reportError("No such element: '" + el + "'");
     } else {
+
+      if (clear) {
+        $(el).empty();
+      }
+
       $(el).addClass("mode-graphic-container");
-      $(el).addClass(id)
+      $(el).addClass(id);
     }
 
     return "." + id;
@@ -666,7 +673,8 @@ var alamode = {
         centerLng = o["center_lng"] || -98.35,
         zoom = o["starting_zoom"] || 4,
         dotRadius = o["dot_size"] || .4,
-        dotOpacity = o["dot_opacity"] || .8;
+        dotOpacity = o["dot_opacity"] || .8,
+        applyFilter = o["apply_filter"] || false;
 
     var data = alamode.getDataFromQuery(queryName),
         validData = [];
@@ -677,7 +685,7 @@ var alamode = {
       }
     })
 
-    var uniqContainerClass = alamode.addContainerElement(htmlElement);
+    var uniqContainerClass = alamode.addContainerElement(htmlElement, applyFilter);
 
     d3.select(uniqContainerClass)
       .style("height",height + "px")
