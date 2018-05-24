@@ -289,9 +289,10 @@ var alamode = {
         tableId = "#" + selectedTable,
         resultColumns = alamode.getColumnsFromQuery(queryName),
         data = alamode.getDataFromQuery(queryName),
-        selectedColumns = o["columns_with_totals"];
+        selectedColumns = o["columns_with_totals"],
+        userProvidedFmt = o["fmt"];
 
-    var fmt = d3.format(",");
+    var fmt = userProvidedFmt || d3.format(",");
 
     var columnsWithSums = getColumns(selectedColumns),
         totals = makeSums(columnsWithSums);
