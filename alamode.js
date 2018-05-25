@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.19";
+var version = "0.20";
 
 var alamode = {
 
@@ -1918,6 +1918,10 @@ var alamode = {
         defaultExclusions = o["default_exclusions"] || [],
         defaultInclusions = o["default_inclusions"] || [];
 
+    if (!Array.isArray(defaultValues)) {
+      defaultValues = [defaultValues]
+    }
+
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
         columnNames = _.map(columns,"name");
@@ -1950,7 +1954,7 @@ var alamode = {
           cols: defaultColumns,
           rows: defaultRows,
           aggregatorName: aggregator,
-          vals: [defaultValues],
+          vals: defaultValues,
           rendererName: selectedRenderer,
           exclusions: defaultExclusions,
           inclusions: defaultInclusions
@@ -1965,7 +1969,7 @@ var alamode = {
         transformedData, {
           cols: defaultColumns,
           rows: defaultRows,
-          aggregator: agg([defaultValues]),
+          aggregator: agg(defaultValues),
           renderer: render,
           exclusions: defaultExclusions,
           inclusions: defaultInclusions
