@@ -115,12 +115,14 @@ var alamode = {
                   cName = url.substring(start+2,start+end+2),
                   full = url.substring(start,start+end+4),
                   col = colIndex[cName],
-                  content = data[rowKey][cName];
+                  content = data[rowKey][cName],
+                  escaped = encodeURIComponent(content);
 
-              url = url.replace(full,content);
+              url = url.replace(full, escaped);
             }
 
-            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+            var newCellContent = $("<a>", {href: url}).text(cellContent);
+            cells.eq(columnToShow).empty().append(newCellContent);
           })
         }
       })
