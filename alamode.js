@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.20";
+var version = "0.21";
 
 var alamode = {
 
@@ -2910,5 +2910,61 @@ var alamode = {
         }, speed);
         }
      }, 100);
+  },
+  
+  xAnnotations: function(o){
+    var chartId      = o["chart_id"],
+        xValues      = o["comment_values"],
+        comments     = o["comments"],
+        commentColor = o["color"] || [],
+        isDate       = o["is_date"] || false;
+
+    setTimeout(function() {
+      
+      var highchartContainer = $("#" + chartId).find("div.highcharts-container")[0],
+          highchartId = highchartContainer.id;
+      
+      var charts = Highcharts.charts;
+          chart = charts.filter(function(c) { if (c) { return c.container.id == highchartId;}; })[0];
+          data = chart.series[0].data;
+      
+      if (isDate) {
+        for (i = 0; i < xValues.length; i++) {
+          xValues[i] = new Date (xValues[i]).getTime();
+        }
+      }
+      
+      var points = data.filter(function(d) { if (d) { return xValues.indexOf(d.category) >= 0;}; }); 
+         
+      function addAnnotation(chart) {
+        for (i = 0; i < points.length; i++) {
+          var point = points[i];
+          var color = commentColor[i] || point.color || "#FCFCFC";
+          
+          var text = chart.renderer.label(
+              comments[i],
+              point.plotX + chart.plotLeft,
+              10,
+              "callout",
+              point.plotX + chart.plotLeft,
+              point.plotY + chart.plotTop
+            ).attr({
+              "fill": '#FCFCFC',
+              "stroke": color,
+              "stroke-width": 1,
+              "radius": 10,
+              "zIndex": 4
+            }).add();      
+        }
+      }
+
+      chart.update({
+        chart: {
+          events: {
+            load: addAnnotation(chart)
+           }
+        }
+      });
+    }, 250);
   }
 }
