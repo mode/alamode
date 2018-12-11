@@ -705,7 +705,7 @@ var alamode = {
       .style("width",mapWidth + "px")
 
     var baseLayer = L.tileLayer(
-      'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18
     });
 
