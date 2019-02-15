@@ -113,14 +113,15 @@ var alamode = {
                   start = url.indexOf("{{"),
                   end = url.substring(start+2,chars).indexOf("}}"),
                   cName = url.substring(start+2,start+end+2),
-                  full = url.substring(start,start+end+4),
+                  // {{ }} encoded becomes %7B%7B %7D%7D (12 char)
+                  full = url.substring(start,start+end+12),
                   col = colIndex[cName],
                   content = encodeURIComponent(data[rowKey][cName]);
 
-              url = url.replace(full,content);
+              url = encodeURI(url).replace(full,content);
             }
 
-            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+            cells.eq(columnToShow).html("<a href='" + url + "'>" + cellContent + "</a>")
           })
         }
       })
