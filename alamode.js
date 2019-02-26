@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.21";
+var version = "0.22";
 
 var alamode = {
 
@@ -64,7 +64,8 @@ var alamode = {
     var tableId = "#" + o["table_id"],
         linkColumns = o["link_columns"],
         linkURLs = o["link_urls"],
-        queryName = o["query_name"];
+        queryName = o["query_name"],
+        openInNewTab = o["open_in_new_tab"] || false;
 
     var linkFormat = [];
     var colIndex = {};
@@ -120,7 +121,9 @@ var alamode = {
               url = url.replace(full,content);
             }
 
-            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+            var target = (openInNewTab) ? "_blank" : "_top";
+            var link_html = "<a target='" + target + "' href='" + encodeURI(url) + "'>" + cellContent + "</a>";
+            cells.eq(columnToShow).html(link_html);
           })
         }
       })
@@ -2911,7 +2914,7 @@ var alamode = {
         }
      }, 100);
   },
-  
+
   xAnnotations: function(o){
     var chartId      = o["chart_id"],
         xValues      = o["comment_values"],
@@ -2920,27 +2923,27 @@ var alamode = {
         isDate       = o["is_date"] || false;
 
     setTimeout(function() {
-      
+
       var highchartContainer = $("#" + chartId).find("div.highcharts-container")[0],
           highchartId = highchartContainer.id;
-      
+
       var charts = Highcharts.charts;
           chart = charts.filter(function(c) { if (c) { return c.container.id == highchartId;}; })[0];
           data = chart.series[0].data;
-      
+
       if (isDate) {
         for (i = 0; i < xValues.length; i++) {
           xValues[i] = new Date (xValues[i]).getTime();
         }
       }
-      
-      var points = data.filter(function(d) { if (d) { return xValues.indexOf(d.category) >= 0;}; }); 
-         
+
+      var points = data.filter(function(d) { if (d) { return xValues.indexOf(d.category) >= 0;}; });
+
       function addAnnotation(chart) {
         for (i = 0; i < points.length; i++) {
           var point = points[i];
           var color = commentColor[i] || point.color || "#FCFCFC";
-          
+
           var text = chart.renderer.label(
               comments[i],
               point.plotX + chart.plotLeft,
@@ -2954,7 +2957,7 @@ var alamode = {
               "stroke-width": 1,
               "radius": 10,
               "zIndex": 4
-            }).add();      
+            }).add();
         }
       }
 
