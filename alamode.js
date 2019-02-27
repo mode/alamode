@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.21";
+var version = "0.22";
 
 var alamode = {
 
@@ -64,7 +64,8 @@ var alamode = {
     var tableId = "#" + o["table_id"],
         linkColumns = o["link_columns"],
         linkURLs = o["link_urls"],
-        queryName = o["query_name"];
+        queryName = o["query_name"],
+        openInNewTab = o["open_in_new_tab"] || false;
 
     var linkFormat = [];
     var colIndex = {};
@@ -120,7 +121,9 @@ var alamode = {
               url = url.replace(full,content);
             }
 
-            cells.eq(columnToShow).html("<a href='" + encodeURI(url) + "'>" + cellContent + "</a>")
+            var target = (openInNewTab) ? "_blank" : "_top";
+            var link_html = "<a target='" + target + "' href='" + encodeURI(url) + "'>" + cellContent + "</a>";
+            cells.eq(columnToShow).html(link_html);
           })
         }
       })
