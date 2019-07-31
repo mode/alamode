@@ -332,6 +332,12 @@ h1.mode-error {
   border-radius: 3px 0 0 3px;
 }
 
+ /* fixes repeated nav menu appearing on each PDF page */
+.picasso-pdf .fixed-nav-bar {
+  position: relative !important;
+  display: inline-block !important;
+}
+
 .has-nav {
   padding-top: 3em;
 }
