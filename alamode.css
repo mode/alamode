@@ -66,6 +66,41 @@ h1.mode-error {
   color: #8D9D9F;
 }
 
+
+/*simple heatmap styling*/
+.mode-simple-heatmap-pivot-label {
+  font-size: 12px;
+  text-align: center;
+  margin: 10px;
+}
+
+.mode-simple-heatmap-table {
+  table-layout: fixed;
+  border-collapse: separate;
+  font-size: 10px;
+  border-spacing: 1px;
+  margin: 5px auto 10px auto;
+}
+
+.mode-simple-heatmap-table-header-cell {
+  overflow: hidden;
+  font-size: 12px;
+  padding: 4px;
+  color: white;
+  background: gray;
+}  
+.mode-simple-heatmap-table td {
+  overflow: hidden;
+  padding: 6px 6px 4px 6px;
+  /*border-radius: 4px;*/
+}
+
+.mode-simple-heatmap-label {
+  text-align: center;
+  color: #8D9D9F;
+}
+
+
 /*Google map*/
 .mode-google-map {
   height: 100%;
