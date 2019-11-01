@@ -582,6 +582,167 @@ var alamode = {
     }
   },
 
+
+  // A simple heatmap to use for any 2-labeled data
+  // Parameters:
+
+  // - query_name: the name of the query that has the source data
+  // - x_column: the column to show across the top
+  // - y_column: the column to show down the left side
+  // - value_column: the column to show in the heatmap boxes
+  // - max_value: if present, all values greater than this value will be set to the maximum color
+  // - min_value: if present, all values less than this value will be set to the minimum color
+  // - color_gradient: if present, overrides the green/red gradient. Should be an array of strings, where each value is a hex color string
+  // - html_element: The element to add the heatmap to
+  // - title: The title of the heatmap
+  // - x_label: The title to show above the x_column values
+  // - y_label: The title to show above the left column of the heatmap with y_column values
+  // - value_is_percent: a bool (default false). If it's true, the values will be formatted using d3.format as a percent
+  // - precision: if value_is_percent is true, this is used as the precision in the d3.format call
+  simpleHeatmap: function(o) {
+
+    var queryName = o["query_name"],
+
+        xColumn = o["x_column"],
+        yColumn = o["y_column"],
+        valueColumn = o["value_column"],
+        maxValue = o["max_value"] || Number.MAX_VALUE,
+        minValue = (o["min_value"]===0) ? 0 : (o["min_value"] || Number.MIN_VALUE ),
+
+        // Optional
+        colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
+        
+        htmlElement = o["html_element"] || "body",
+        title = o["title"] || queryName,
+        xLabel = o["x_label"] || "",
+        yLabel = o["y_label"] || "",
+
+        isPercent = o["value_is_percent"],
+        precision = o["precision"] || 0;
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName),
+        xVals = _.uniq( _.map(data, xColumn) ),
+        yVals = _.uniq( _.map(data, yColumn) );
+
+    var uniqContainerClass = alamode.addContainerElement(htmlElement);
+
+    var color = d3.scale.quantize()
+      .domain(d3.extent(data, function(d) { 
+        return Math.max(minValue, Math.min(maxValue, d[valueColumn]));
+      }))
+      .range(colors)
+
+    d3.select(uniqContainerClass)
+      .append("div")
+      .attr("class","mode-graphic-title")
+      .text(title)
+
+    d3.select(uniqContainerClass)
+      .append("div")
+      .attr("class","mode-simple-heatmap-label")
+      .text(yLabel)
+
+      headers = [xColumn].concat(yVals)
+
+    var table = d3.select(uniqContainerClass).append("table")
+        .attr("class","mode-simple-heatmap-table");
+
+    table.selectAll(".mode-simple-heatmap-table-header")
+        .data([0])
+      .enter().append("tr")
+        .attr("class","mode-simple-heatmap-table-header")
+      .selectAll("mode-simple-heatmap-table-header-cell")
+        .data(headers)
+      .enter().append("td")
+        .attr("class",function(d) {
+          if (isNaN(d)) { return "mode-simple-heatmap-table-header-cell heatmap-string"; }
+          else { return "mode-simple-heatmap-table-header-cell heatmap-number"; }
+        })
+      .text(function(d) { return d; })
+
+    table.selectAll(".mode-simple-heatmap-table-row")
+        .data(xVals)
+      .enter().append("tr")
+        .attr("class","mode-simple-heatmap-table-row")
+      .selectAll(".mode-simple-heatmap-table-cell")
+        .data(function(d) { return makeRow(data,d); })
+      .enter().append("td")
+        .style("background",function(d) { if (checkShade(d)) { return color(Math.max(minValue, Math.min(maxValue, d.value))); } })
+        .attr("class",function(d) { return cellClass(d); })
+        .text(function(d) { return fmt(d,o); })
+
+    function checkShade(entry) {
+      if (entry.value === "") {
+        return false;
+      } else if (entry.column == xColumn) {
+        return false;
+      } else if (entry.column == valueColumn) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function cellClass(entry) {
+      var type = getDataType(entry.column);
+
+      if (type == "float" || type == "integer" || type == "number") {
+        return "heatmap-number";
+      } else {
+        return "heatmap-string";
+      }
+    }
+
+    function getDataType(column) {
+      return columns.filter(function(d) { return d.name == column })[0].type;
+    }
+
+    function makeRow(data,xVal) {
+      
+      var row = [ {column: xColumn, value: xVal } ];
+      yVals.forEach(function(p) {
+
+        var matches = _.filter(data, function(d) {
+          return d[xColumn] == xVal && d[yColumn] == p
+        });
+
+        if (matches.length > 0) {
+          entry = d3.mean( _.map(matches,valueColumn) );
+        } else {
+          entry = minValue;
+        }
+        row = row.concat( {column: valueColumn, value: entry} )
+      })
+      return row;
+    }
+
+    function fmt(entry) {
+
+      var type = getDataType(entry.column);
+
+      var c = d3.format(","),
+          p = d3.format("." + precision + "%"),
+          t = d3.time.format("%b %d, %Y");
+
+      if (entry.value == "") {
+        return entry.value;
+      } else if (type == "datetime" || type == "timestamp" || type == "date") {
+        if (typeof moment == "function") {
+          return moment(entry.value).utc().format("ll")
+        } else {
+          return t(new Date(entry.value));
+        }
+      } else if (entry.column == valueColumn && isPercent) {
+        return p(entry.value);
+      } else if (entry.column == valueColumn) {
+        return c(entry.value);
+      } else {
+        return entry.value;
+      }
+    }
+  },
+
   // Built with Google Maps Javascript API
   // https://developers.google.com/maps/documentation/javascript/
   googleMap: function(o) {
