@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.22";
+var version = "0.23";
 
 var alamode = {
 
@@ -452,7 +452,7 @@ var alamode = {
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
         cohorts = _.uniq( _.map(data, cohortColumn) ),
-        pivots = _.uniq( _.map(data, pivotColumn) );
+        pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
 
