@@ -1,7 +1,7 @@
 // alamode.js
 //
 // Visualizations for Mode reports
-var version = "0.23";
+var version = "0.24";
 
 var alamode = {
 
@@ -447,12 +447,15 @@ var alamode = {
         title = o["title"] || queryName,
         pivotLabel = o["pivot_label"] || "",
         isPercent = o["value_is_percent"],
-        precision = o["precision"] || 0;
+        precision = o["precision"] || 0,
+        sortPivot = o["sort_pivot"];
 
     var data = alamode.getDataFromQuery(queryName),
         columns = alamode.getColumnsFromQuery(queryName),
         cohorts = _.uniq( _.map(data, cohortColumn) ),
-        pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
+        //Unless sortPivot is explicitly set to false, by default it should be sorted, e.g even if sortPivot isn't defined
+        pivots =  sortPivot === false ? _.uniq( _.map(data, pivotColumn) ) : _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
+
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
 
@@ -611,7 +614,7 @@ var alamode = {
 
         // Optional
         colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
-        
+
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
         xLabel = o["x_label"] || "",
@@ -628,7 +631,7 @@ var alamode = {
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
 
     var color = d3.scale.quantize()
-      .domain(d3.extent(data, function(d) { 
+      .domain(d3.extent(data, function(d) {
         return Math.max(minValue, Math.min(maxValue, d[valueColumn]));
       }))
       .range(colors)
@@ -699,7 +702,7 @@ var alamode = {
     }
 
     function makeRow(data,xVal) {
-      
+
       var row = [ {column: xColumn, value: xVal } ];
       yVals.forEach(function(p) {
 
