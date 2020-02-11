@@ -442,6 +442,8 @@ var alamode = {
         valueColumn = o["value_column"],
         // Optional
         colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
+        // TODO: by pivot_column (row) or by pivot_column (column)
+        gradient_by = o["gradient_by"] || "all", // "all" | "cohort_column" | "pivot_column"
         totalColumn = o["total_column"],
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
@@ -455,10 +457,32 @@ var alamode = {
         pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-
-    var color = d3.scale.quantize()
-      .domain(d3.extent(data, function(d) { return d[valueColumn]; }))
-      .range(colors)
+    
+    if (gradient_by === "cohort_column") {
+      var colorsByCohort = {};
+      cohorts.forEach(function (cohort) {
+        var dataByCohort = data.filter(function (row) {
+          return row[cohortColumn] === cohort;
+        });
+        colorsByCohort[cohort] = d3.scale.quantize()
+          .domain(d3.extent(dataByCohort, function(d) { return d[valueColumn]; }))
+          .range(colors)
+      })
+    } else if (gradient_by === "pivot_column") {
+      var colorsByPivot = {};
+      pivots.forEach(function (pivot) {
+        var dataByPivot = data.filter(function (row) {
+          return row[pivotColumn] === pivot;
+        });
+        colorsByPivot[pivot] = d3.scale.quantize()
+          .domain(d3.extent(dataByPivot, function(d) { return d[valueColumn]; }))
+          .range(colors)
+      })
+    } else {  // table or as a default fallback
+      var color = d3.scale.quantize()
+        .domain(d3.extent(data, function(d) { return d[valueColumn]; }))
+        .range(colors)
+    }
 
     d3.select(uniqContainerClass)
       .append("div")
@@ -499,20 +523,21 @@ var alamode = {
       .selectAll(".mode-retention-heatmap-table-cell")
         .data(function(d) { return makeRow(data,d); })
       .enter().append("td")
-        .style("background",function(d) { if (checkShade(d)) { return color(d.value); } })
+        .style("background",function(d) { if (checkShade(d)) { return pickColor(d); } })
         .attr("class",function(d) { return cellClass(d); })
         .text(function(d) { return fmt(d,o); })
 
-    function checkShade(entry) {
-      if (entry.value == "") {
-        return false;
-      } else if (entry.column == pivotColumn || entry.column == totalColumn) {
-        return false;
-      } else if (entry.column == valueColumn) {
-        return true;
-      } else {
-        return false;
+    function pickColor (entry) {
+      if (gradient_by === "cohort_column") {
+        return colorsByCohort[entry.cohort](entry.value);
+      } else if (gradient_by === "pivot_column") {
+        return colorsByPivot[entry.pivot](entry.value);
       }
+      return color(entry.value)
+    }
+
+    function checkShade(entry) {
+      return entry.column == valueColumn && entry.value !== "";
     }
 
     function cellClass(entry) {
@@ -549,7 +574,7 @@ var alamode = {
         } else {
           entry = "";
         }
-        row = row.concat( {column: valueColumn, value: entry} )
+        row = row.concat( {column: valueColumn, value: entry, cohort: cohort, pivot: p } )
       })
       return row;
     }
