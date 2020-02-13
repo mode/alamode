@@ -2257,13 +2257,9 @@ var alamode = {
   },
 
   addLinkToBigNumber: function(o) {
-    var chartId = "#" + o["chart_id"],
-        linkURL = o["url"];
-
-    $(chartId + " .chart-big-number .aggregate span").replaceWith(function() {
-      var text = $.trim($(this).text());
-      return "<a style='text-decoration: underline;' href='" + linkURL + "' target='_blank'>" + text + "</a>";
-    });
+    window["ALAMODE_CHARTS"] = {};
+    var chartToken = o["chart_id"].split('_')[1];
+    window["ALAMODE_CHARTS"][chartToken] = o["url"];
   },
 
   forceDirectedGraph: function (o) {
