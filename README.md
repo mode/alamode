@@ -9,7 +9,7 @@ _A community-maintained library of visualizations for Mode reports_
 
 See [the gallery of visualizations](https://community.modeanalytics.com/gallery) included in this library. 
 
-### Quick Usage
+## Quick Usage
 
 1. Open the [HTML editor](https://help.modeanalytics.com/articles/create-advanced-layouts-and-visualizations/) in a Mode report.
 2. Add `alamode.js` and `alamode.css` to your report by adding these two lines to top of your report's HTML. 
@@ -32,3 +32,38 @@ See [the gallery of visualizations](https://community.modeanalytics.com/gallery)
   		}
 	)
 	```
+
+## Making Changes
+Great! You've created a branch and you've udpated `alamode.js` or `alamode.css` but you're probably wondering how to minify your changes and get them into production. The steps below outline how to minify your code and how to get your changes live. 
+
+### Minification
+If you've made changes to `alamode.js`, in order to minify the file you'll need to use [UglifyJS2](https://github.com/mishoo/UglifyJS2). Once you've followed the instructions for installation, you'll need to run the following command to minify `alamode.js` to `alamode.min.js`
+
+```sh
+uglifyjs --output alamode.min.js --compress --mangle -- alamode.js
+```
+
+If you've made changes to `alamode.css`, in order to minify the file you'll need to use [CSSO](https://github.com/css/csso). Once you've followed the instructions for installion, you'll need to run the following command to minify `alamode.css` to `alamode.min.css`
+
+```sh
+csso alamode.css --output alamode.min.css
+```
+
+### Geting to Production
+Once your changes are minified, create a pull request against `master`. When your changes are approved, merge your branch into `master`. 
+
+After your changes have been merged to master, you'll need to merge your changes from `master` to a branch called `gh-pages`. `gh-pages` is our production branch and once your changes are merged to it, it will be live. Follow the commands below to merge your changes from `master` to `gh-pages`: 
+
+```sh
+# from your local master branch ensure that you do a pull on master 
+# this ensures that the changes that you just merged are 
+# also on your local branch
+git pull master
+
+# switching to gh-pages branch
+git checkout gh-pages
+git merge master
+git push
+```
+
+And that's it! Now your change to Alamode are live!
