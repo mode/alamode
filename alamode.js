@@ -4,9 +4,6 @@
 var version = "0.23";
 
 var alamode = {
-  createAlamodeChartsWindowObj: (function() {
-    window["ALAMODE_CHARTS"] = {};
-  }()),
 
   reportError: function(msg) {
     $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
@@ -2260,6 +2257,7 @@ var alamode = {
   },
 
   addLinkToBigNumber: function(o) {
+    window["ALAMODE_CHARTS"] = window["ALAMODE_CHARTS"] || {};
     var chartToken = o["chart_id"].split('_')[1];
     window["ALAMODE_CHARTS"][chartToken] = o["url"];
   },
