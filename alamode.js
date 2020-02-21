@@ -2257,7 +2257,7 @@ var alamode = {
   },
 
   addLinkToBigNumber: function(o) {
-    window["ALAMODE_CHARTS"] = {};
+    window["ALAMODE_CHARTS"] = window["ALAMODE_CHARTS"] || {};
     var chartToken = o["chart_id"].split('_')[1];
     window["ALAMODE_CHARTS"][chartToken] = o["url"];
   },
