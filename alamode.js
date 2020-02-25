@@ -442,6 +442,8 @@ var alamode = {
         valueColumn = o["value_column"],
         // Optional
         colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
+        gradientBy = o["gradient_by"] || "all", // "all" | "cohort_column" | "pivot_column"
+        gradientColumn = o["gradient_column"] || valueColumn,
         totalColumn = o["total_column"],
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
@@ -455,10 +457,32 @@ var alamode = {
         pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-
-    var color = d3.scale.quantize()
-      .domain(d3.extent(data, function(d) { return d[valueColumn]; }))
-      .range(colors)
+    
+    if (gradientBy === "cohort_column") {
+      var colorsByCohort = {};
+      cohorts.forEach(function (cohort) {
+        var dataByCohort = data.filter(function (row) {
+          return row[cohortColumn] === cohort;
+        });
+        colorsByCohort[cohort] = d3.scale.quantize()
+          .domain(d3.extent(dataByCohort, function(d) { return d[gradientColumn]; }))
+          .range(colors)
+      })
+    } else if (gradientBy === "pivot_column") {
+      var colorsByPivot = {};
+      pivots.forEach(function (pivot) {
+        var dataByPivot = data.filter(function (row) {
+          return row[pivotColumn] === pivot;
+        });
+        colorsByPivot[pivot] = d3.scale.quantize()
+          .domain(d3.extent(dataByPivot, function(d) { return d[gradientColumn]; }))
+          .range(colors)
+      })
+    } else {  // table or as a default fallback
+      var color = d3.scale.quantize()
+        .domain(d3.extent(data, function(d) { return d[gradientColumn]; }))
+        .range(colors)
+    }
 
     d3.select(uniqContainerClass)
       .append("div")
@@ -499,20 +523,21 @@ var alamode = {
       .selectAll(".mode-retention-heatmap-table-cell")
         .data(function(d) { return makeRow(data,d); })
       .enter().append("td")
-        .style("background",function(d) { if (checkShade(d)) { return color(d.value); } })
+        .style("background",function(d) { if (checkShade(d)) { return pickColor(d); } })
         .attr("class",function(d) { return cellClass(d); })
         .text(function(d) { return fmt(d,o); })
 
-    function checkShade(entry) {
-      if (entry.value == "") {
-        return false;
-      } else if (entry.column == pivotColumn || entry.column == totalColumn) {
-        return false;
-      } else if (entry.column == valueColumn) {
-        return true;
-      } else {
-        return false;
+    function pickColor (entry) {
+      if (gradientBy === "cohort_column") {
+        return colorsByCohort[entry.cohort](entry.gradientValue);
+      } else if (gradientBy === "pivot_column") {
+        return colorsByPivot[entry.pivot](entry.gradientValue);
       }
+      return color(entry.gradientValue)
+    }
+
+    function checkShade(entry) {
+      return entry.column == valueColumn && entry.value !== "";
     }
 
     function cellClass(entry) {
@@ -545,11 +570,12 @@ var alamode = {
         });
 
         if (matches.length > 0) {
-          entry = d3.mean( _.map(matches,valueColumn) );
+          entryValue = d3.mean( _.map(matches,valueColumn) );
+          gradientValue = d3.mean( _.map(matches,gradientColumn) );
         } else {
-          entry = "";
+          entryValue = "";
         }
-        row = row.concat( {column: valueColumn, value: entry} )
+        row = row.concat( {column: valueColumn, value: entryValue, cohort: cohort, pivot: p, gradientValue: gradientValue } )
       })
       return row;
     }
