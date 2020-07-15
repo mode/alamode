@@ -574,6 +574,7 @@ var alamode = {
           gradientValue = d3.mean( _.map(matches,gradientColumn) );
         } else {
           entryValue = "";
+          gradientValue = "";
         }
         row = row.concat( {column: valueColumn, value: entryValue, cohort: cohort, pivot: p, gradientValue: gradientValue } )
       })
