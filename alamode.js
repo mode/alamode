@@ -457,7 +457,7 @@ var alamode = {
         pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-    
+
     if (gradientBy === "cohort_column") {
       var colorsByCohort = {};
       cohorts.forEach(function (cohort) {
@@ -608,7 +608,6 @@ var alamode = {
     }
   },
 
-
   // A simple heatmap to use for any 2-labeled data
   // Parameters:
 
@@ -637,7 +636,7 @@ var alamode = {
 
         // Optional
         colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
-        
+
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
         xLabel = o["x_label"] || "",
@@ -654,7 +653,7 @@ var alamode = {
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
 
     var color = d3.scale.quantize()
-      .domain(d3.extent(data, function(d) { 
+      .domain(d3.extent(data, function(d) {
         return Math.max(minValue, Math.min(maxValue, d[valueColumn]));
       }))
       .range(colors)
@@ -725,7 +724,7 @@ var alamode = {
     }
 
     function makeRow(data,xVal) {
-      
+
       var row = [ {column: xColumn, value: xVal } ];
       yVals.forEach(function(p) {
 
@@ -767,6 +766,81 @@ var alamode = {
         return entry.value;
       }
     }
+  },
+
+  // A simple way to draw a heatmap on an existing table.
+  // It claculates averages automatically and supports multiple columns.
+  // Parameters:
+
+  // - queryToken: the name of the query that has the source data
+  // - vizId:  table's id
+  // - columns: the columns to overlay a heatmap for
+  // - color_gradient: if present, overrides the green/red gradient. Should be an array of strings, where each value is a hex color string
+  // - inverse: if present, it reverses the color order (i.e. lower is better, higher is worse)
+  heatmapOverlay: function(o) {
+    var colors = o.color_gradient || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"]
+    var dataset = datasets.filter(function(data) { return data.query_token === o.queryToken })
+
+    if (o.inverse) {
+      colors = colors.reverse()
+    }
+
+    // Used to convert rgb(x, x, x) color format from d3 to #hex format.
+    function componentFromStr(numStr, percent) {
+      var num = Math.max(0, parseInt(numStr, 10));
+      return percent ? Math.floor(255 * Math.min(100, num) / 100) : Math.min(255, num);
+    }
+    function rgbToHex(rgb) {
+      var rgbRegex = /^rgb\(\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*\)$/;
+      var result, r, g, b, hex = "";
+      if ((result = rgbRegex.exec(rgb))) {
+        r = componentFromStr(result[1], result[2]);
+        g = componentFromStr(result[3], result[4]);
+        b = componentFromStr(result[5], result[6]);
+
+        hex = "#" + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      }
+      return hex;
+    }
+
+    function heatmapColumnRules(columnName, dataset, valueFunc) {
+
+      var avg = d3.mean(dataset.content.map(valueFunc));
+      var maxVal = d3.max(dataset.content.map(valueFunc));
+      var minVal = d3.min(dataset.content.map(valueFunc));
+      var buckets = d3.range(0, dataset.content.length)
+      var color = d3.scaleSequential()
+        .domain([minVal, maxVal])
+        .interpolator(d3.interpolateRgbBasis(colors));
+
+      var scale = d3.scaleThreshold()
+        .domain(buckets)
+        .range(dataset.content.map(valueFunc).sort())
+
+      return {
+        name: columnName,
+        rules: buckets.map(function (index) {
+          return {
+            type: '<=',
+            value: scale(index),
+            color: rgbToHex(color(scale(index)))
+          }
+        }).concat({
+          type: '>=',
+          value: maxVal,
+          color: colors[colors.length - 1]
+        })
+      }
+    }
+
+    alamode.customizeTable([{
+      vizId: o.vizId,
+      formatByColumn: {
+        columns: (o.columns || []).map(function (column) {
+          return heatmapColumnRules(column, dataset[0], function (row) { return row[column] })
+        })
+      }
+    }])
   },
 
   // Built with Google Maps Javascript API
