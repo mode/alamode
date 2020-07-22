@@ -37,7 +37,7 @@ See [the gallery of visualizations](https://community.modeanalytics.com/gallery)
 Great! You've created a branch and you've udpated `alamode.js` or `alamode.css` but you're probably wondering how to minify your changes and get them into production. The steps below outline how to minify your code and how to get your changes live. 
 
 ### Minification
-If you've made changes to `alamode.js`, in order to minify the file you'll need to use [UglifyJS2](https://github.com/mishoo/UglifyJS2). Once you've followed the instructions for installation, you'll need to run the following command to minify `alamode.js` to `alamode.min.js`
+If you've made changes to `alamode.js`, in order to minify the file you'll need to use [UglifyJS2](https://github.com/mishoo/UglifyJS/tree/v2.x). Once you've followed the instructions for installation, you'll need to run the following command to minify `alamode.js` to `alamode.min.js`
 
 ```sh
 uglifyjs --output alamode.min.js --compress --mangle -- alamode.js

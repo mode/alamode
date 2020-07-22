@@ -564,7 +564,8 @@ var alamode = {
       }
 
       pivots.forEach(function(p) {
-
+        var entryValue = '';
+        var gradientValue = '';
         var matches = _.filter(data, function(d) {
           return d[cohortColumn] == cohort && d[pivotColumn] == p
         });
@@ -572,9 +573,8 @@ var alamode = {
         if (matches.length > 0) {
           entryValue = d3.mean( _.map(matches,valueColumn) );
           gradientValue = d3.mean( _.map(matches,gradientColumn) );
-        } else {
-          entryValue = "";
-        }
+        } 
+        
         row = row.concat( {column: valueColumn, value: entryValue, cohort: cohort, pivot: p, gradientValue: gradientValue } )
       })
       return row;
