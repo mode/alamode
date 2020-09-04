@@ -5,7 +5,7 @@
   margin: 0 auto;
   margin-top: 15px;
   margin-bottom: 15px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .mode-graphic-title {
