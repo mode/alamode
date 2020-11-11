@@ -3159,5 +3159,100 @@ var alamode = {
         }
       });
     }, 250);
+  },
+
+  barChartFunnel: function(o){
+    var chartId      = o["chart_id"];
+
+    setTimeout(function() {
+
+      var highchartContainer = $("#" + chartId).find("div.highcharts-container")[0],
+          highchartId = highchartContainer.id;
+
+      var charts = Highcharts.charts;
+          chart = charts.filter(function(c) { if (c) { return c.container.id == highchartId;}; })[0];
+          data = chart.series[0].data;
+
+          var pct = d3.format(".1%")
+    var s2Color = chart.series[1].color
+
+
+    chart.update({
+      series: [{
+        color: s2Color,
+        opacity: 0.6
+      }, {
+        dataLabels: {
+          enabled: true,
+          useHTML: true,
+          borderRadius: 5,
+          padding: 20,
+          formatter: function() {
+            var idx = this.point.index;
+            // var data = this.series.data;
+
+            if (idx == 0) {
+              return null
+            } else {
+              return pct(this.percentage / 100);
+            }
+
+            // if (idx < data.length - 1) {
+            //   return pct(data[idx + 1].percentage / 100);
+            // } else {
+            //   return null;
+            // }
+          },
+          border: "black",
+          shape: "square",
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          style: {
+            fontSize: "11px",
+            color: "black",
+            fontWeight: 100,
+            color: '#FFFFFF',
+            textOutline: 'none'
+          }
+        }
+      }],
+
+      plotOptions: {
+        series: {
+          dataLabels: {
+            x: -210,
+            y: 150
+          }
+        }
+      }
+
+    });
+
+    let overallRate = pct(chart.yAxis[0].dataMin / chart.yAxis[0].dataMax)
+
+
+    chart.renderer.text('Overall Rate'+'<br/><br/>'+overallRate, chart.plotSizeX - 20, chart.plotTop + 20)
+      .attr({
+        zIndex: 5
+      })
+      .css({
+        fontSize: '14px',
+        color: '#FFFFFF'
+      })
+      .add();
+
+
+    chart.renderer.rect(chart.plotSizeX - 30, chart.plotTop, 124, 50, 2)
+      .attr({
+        'stroke-width': 2,
+        stroke: 'black',
+        fill: 'black',
+        zIndex: 4
+      })
+      .add();
+
+
+     
+    }, 250);
   }
+
 }
