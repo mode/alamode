@@ -820,9 +820,11 @@ var alamode = {
         .domain([minVal, maxVal])
         .interpolator(d3.interpolateRgbBasis(colors));
 
+      console.log('buckets', buckets, dataset.content.map(valueFunc).sort())
       var scale = d3.scaleThreshold()
         .domain(buckets)
         .range(dataset.content.map(valueFunc).sort())
+
 
       return {
         name: columnName,
@@ -845,11 +847,12 @@ var alamode = {
       formatByColumn: {
         columns: (o.columns || []).map(function (column, index) {
           if (!column) throw new Error("Colum data isn't passed properly.");
+          var colName = typeof column === 'string' ? column : (column || {}).name
           return heatmapColumnRules({
-            name: typeof column === 'string' ? column : (column || {}).name,
+            name: colName,
             color_gradient: column.color_gradient || defaultColorGradients[index % defaultColorGradients.length],
             inverse: column.inverse
-          }, dataset[0], function (row) { return row[column] })
+          }, dataset[0], function (row) { return row[colName] })
         })
       }
     }])
