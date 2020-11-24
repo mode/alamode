@@ -820,7 +820,6 @@ var alamode = {
         .domain([minVal, maxVal])
         .interpolator(d3.interpolateRgbBasis(colors));
 
-      console.log('buckets', buckets, dataset.content.map(valueFunc).sort())
       var scale = d3.scaleThreshold()
         .domain(buckets)
         .range(dataset.content.map(valueFunc).sort())
