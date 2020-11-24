@@ -457,7 +457,7 @@ var alamode = {
         pivots = _.sortBy(_.uniq( _.map(data, pivotColumn) ) );
 
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
-    
+
     if (gradientBy === "cohort_column") {
       var colorsByCohort = {};
       cohorts.forEach(function (cohort) {
@@ -573,8 +573,8 @@ var alamode = {
         if (matches.length > 0) {
           entryValue = d3.mean( _.map(matches,valueColumn) );
           gradientValue = d3.mean( _.map(matches,gradientColumn) );
-        } 
-        
+        }
+
         row = row.concat( {column: valueColumn, value: entryValue, cohort: cohort, pivot: p, gradientValue: gradientValue } )
       })
       return row;
@@ -608,7 +608,6 @@ var alamode = {
     }
   },
 
-
   // A simple heatmap to use for any 2-labeled data
   // Parameters:
 
@@ -637,7 +636,7 @@ var alamode = {
 
         // Optional
         colors = o["color_gradient"] || ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
-        
+
         htmlElement = o["html_element"] || "body",
         title = o["title"] || queryName,
         xLabel = o["x_label"] || "",
@@ -654,7 +653,7 @@ var alamode = {
     var uniqContainerClass = alamode.addContainerElement(htmlElement);
 
     var color = d3.scale.quantize()
-      .domain(d3.extent(data, function(d) { 
+      .domain(d3.extent(data, function(d) {
         return Math.max(minValue, Math.min(maxValue, d[valueColumn]));
       }))
       .range(colors)
@@ -725,7 +724,7 @@ var alamode = {
     }
 
     function makeRow(data,xVal) {
-      
+
       var row = [ {column: xColumn, value: xVal } ];
       yVals.forEach(function(p) {
 
@@ -767,6 +766,95 @@ var alamode = {
         return entry.value;
       }
     }
+  },
+
+  // A simple way to draw a heatmap on an existing table.
+  // It claculates averages automatically and supports multiple columns.
+  // Parameters:
+
+  // - queryToken: the name of the query that has the source data
+  // - vizId:  table's id
+  // - columns: the columns to overlay a heatmap for as strings or objects of:
+  //   - color_gradient: if present, overrides the default gradients. Should be an array of strings, where each value is a hex color string
+  //   - inverse: if present, it reverses the color order (i.e. lower is better, higher is worse)
+  heatmapOverlay: function(o) {
+    var dataset = datasets.filter(function(data) { return data.query_token === o.queryToken })
+    var defaultColorGradients = [
+      // ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a","#66bd63","#1a9850"],
+      ['#E2EFD6', '#BCE0AF', '#8CCF8A', '#65BE76', '#41AC6D', '#1D9A6C', '#158B5E', '#0E7B50', '#096A42'],
+      ['#D5F3D6', '#AFE7BD', '#89DAB0', '#64CDAD', '#40BEB4', '#1D9AAF', '#148C9E', '#0D7D8C', '#076D79'],
+      ['#D2EFFF', '#A8DDFF', '#7ECAFF', '#54B5FF', '#2A9EFF', '#0086FF', '#0079DF', '#006BBF', '#005C9F']
+    ]
+
+    // Used to convert rgb(x, x, x) color format from d3 to #hex format.
+    function componentFromStr(numStr, percent) {
+      var num = Math.max(0, parseInt(numStr, 10));
+      return percent ? Math.floor(255 * Math.min(100, num) / 100) : Math.min(255, num);
+    }
+
+    function rgbToHex(rgb) {
+      var rgbRegex = /^rgb\(\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*\)$/;
+      var result, r, g, b, hex = "";
+      if ((result = rgbRegex.exec(rgb))) {
+        r = componentFromStr(result[1], result[2]);
+        g = componentFromStr(result[3], result[4]);
+        b = componentFromStr(result[5], result[6]);
+
+        hex = "#" + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      }
+      return hex;
+    }
+
+    function heatmapColumnRules(columnData, dataset, valueFunc) {
+      var columnName = typeof columnData === 'string' ? columnData : columnData.name
+      var colors = columnData.color_gradient
+      if (columnData.inverse) {
+        colors = colors.reverse()
+      }
+
+      var avg = d3.mean(dataset.content.map(valueFunc));
+      var maxVal = d3.max(dataset.content.map(valueFunc));
+      var minVal = d3.min(dataset.content.map(valueFunc));
+      var buckets = d3.range(0, dataset.content.length)
+      var color = d3.scaleSequential()
+        .domain([minVal, maxVal])
+        .interpolator(d3.interpolateRgbBasis(colors));
+
+      var scale = d3.scaleThreshold()
+        .domain(buckets)
+        .range(dataset.content.map(valueFunc).sort())
+
+
+      return {
+        name: columnName,
+        rules: buckets.map(function (index) {
+          return {
+            type: '<=',
+            value: scale(index),
+            color: rgbToHex(color(scale(index)))
+          }
+        }).concat({
+          type: '>=',
+          value: maxVal,
+          color: colors[colors.length - 1]
+        })
+      }
+    }
+
+    alamode.customizeTable([{
+      vizId: o.vizId,
+      formatByColumn: {
+        columns: (o.columns || []).map(function (column, index) {
+          if (!column) throw new Error("Colum data isn't passed properly.");
+          var colName = typeof column === 'string' ? column : (column || {}).name
+          return heatmapColumnRules({
+            name: colName,
+            color_gradient: column.color_gradient || defaultColorGradients[index % defaultColorGradients.length],
+            inverse: column.inverse
+          }, dataset[0], function (row) { return row[colName] })
+        })
+      }
+    }])
   },
 
   // Built with Google Maps Javascript API
