@@ -847,7 +847,7 @@ var alamode = {
           if (!column) throw new Error("Colum data isn't passed properly.");
           return heatmapColumnRules({
             name: typeof column === 'string' ? column : (column || {}).name,
-            color_gradient: columnData.color_gradient || defaultColorGradients[index % defaultColorGradients.length],
+            color_gradient: column.color_gradient || defaultColorGradients[index % defaultColorGradients.length],
             inverse: column.inverse
           }, dataset[0], function (row) { return row[column] })
         })
