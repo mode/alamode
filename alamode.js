@@ -2044,6 +2044,10 @@ var alamode = {
 
     if (!valueRange) {
       colorDomain = d3.extent(data, function(d) { return d[valueColumn]; });
+
+      if(data.length <= 1){
+        colorDomain.unshift(0)
+      }
     } else {
       colorDomain = valueRange;
     }
