@@ -3257,6 +3257,69 @@ var alamode = {
 
      
     }, 250);
-  }
+  },
+
+  highChartsSeriesColor:function(o){
+    
+    var seriesColors = o["series_Colors"]; 
+       
+ 
+   function consistentColors(series,colors) {
+ 
+ 
+       let seriesArray = new Array(series.length)
+ 
+ 
+ 
+       for (let i = 0; i < seriesArray.length; i++) {
+ 
+         let seriesColor = colors.filter(s => {
+           return s.seriesName === series[i].name
+         });
+ 
+         seriesArray[i] = {
+           color: seriesColor[0].color
+         }
+ 
+       }
+ 
+ 
+ 
+       return seriesArray
+ 
+ 
+     }
+ 
+ 
+ var loadCallbacks = [];
+ 
+   function appendOnLoadEvent(callback) {
+     loadCallbacks.push(callback)
+   }
+   
+   
+ 
+   appendOnLoadEvent(function() {
+ 
+ 
+   })
+ 
+ 
+   H = Highcharts;
+   H.Chart.prototype.callbacks.push(function(chart) {
+     for (var i = 0; i < loadCallbacks.length; ++i) loadCallbacks[i].call(this, event);
+ 
+     chart.update({
+       series: consistentColors(this.series,seriesColors)
+     })
+ 
+       
+     
+ 
+ 
+   });
+     
+   }
+   
 
 }
