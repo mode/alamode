@@ -3264,31 +3264,36 @@ var alamode = {
     var seriesColors = o["series_Colors"]; 
        
  
-   function consistentColors(series,colors) {
- 
- 
-       let seriesArray = new Array(series.length)
- 
- 
- 
-       for (let i = 0; i < seriesArray.length; i++) {
- 
-         let seriesColor = colors.filter(s => {
-           return s.seriesName === series[i].name
-         });
- 
-         seriesArray[i] = {
-           color: seriesColor[0].color
-         }
- 
-       }
- 
- 
- 
-       return seriesArray
- 
- 
-     }
+    function consistentColors (series,seriesColors) {
+
+      let seriesArray = new Array(series.length)
+
+
+      for (let i = 0; i < seriesArray.length; i++) {
+
+        let seriesColor = seriesColors.filter(s => {
+          return s.seriesName === series[i].name
+        });
+        
+        if(seriesColor[0] == null){
+          console.log("Jon Color")
+          seriesColor[0] = ''
+        }
+        
+        console.log(seriesColor[0].color)
+
+        seriesArray[i] = {
+          color: seriesColor[0].color
+        }
+
+      }
+
+
+
+      return seriesArray
+
+
+    }
  
  
  var loadCallbacks = [];
