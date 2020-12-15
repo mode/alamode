@@ -3269,9 +3269,10 @@ var alamode = {
       let seriesArray = new Array(series.length)
 
 
-      for (let i = 0; i < seriesArray.length; i++) {
+      for (var i = 0; i < seriesArray.length; i++) {
 
-        let seriesColor = seriesColors.filter(s => {
+
+        let seriesColor = seriesColors.filter(function(s) {
           return s.seriesName === series[i].name
         });
         
