@@ -433,6 +433,15 @@ var alamode = {
 
     window.dispatchEvent(new Event('resize'));
   },
+  
+  resizeTableHeight: function(o) {
+    var chart = o["chart"],
+        height = o["height"];
+
+      $("#" + chart + " .table-renderer").css("height",height)
+
+    window.dispatchEvent(new Event('resize'));
+  },
 
   retentionHeatmap: function(o) {
 
