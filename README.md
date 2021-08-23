@@ -15,6 +15,8 @@ See [the gallery of visualizations](https://community.modeanalytics.com/gallery)
 2. Add `alamode.js` and `alamode.css` to your report by adding these two lines to top of your report's HTML. 
 
 	```
+	<link rel="stylesheet" href="https://nvd3-community.github.io/nvd3/build/nv.d3.css">
+	<script src="https://nvd3-community.github.io/nvd3/build/nv.d3.js"></script>
 	<link rel="stylesheet" href="alamode.min.css">
 	<script src="alamode.min.js">
 	```
