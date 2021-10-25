@@ -60,6 +60,32 @@ var alamode = {
     return "." + id;
   },
 
+  getTextColor: function(hex) {
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
+
+    if (isHex) {
+      rgb = hexToRgb(hex);
+      o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
+    } else {
+      o = 255;
+    }
+
+    if (o > 125) {
+      return "#2B2B2B";
+    } else {
+      return "#FCFCFC";
+    }
+  },
+
   addLinksToTables: function(o) {
     var tableId = "#" + o["table_id"],
         linkColumns = o["link_columns"],
@@ -524,6 +550,7 @@ var alamode = {
         .data(function(d) { return makeRow(data,d); })
       .enter().append("td")
         .style("background",function(d) { if (checkShade(d)) { return pickColor(d); } })
+        .style("color",function(d) { if (checkShade(d)) { return alamode.getTextColor(pickColor(d)); } })
         .attr("class",function(d) { return cellClass(d); })
         .text(function(d) { return fmt(d,o); })
 
@@ -2844,7 +2871,7 @@ var alamode = {
       data.forEach(function(d,i) {
         var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
             selectedColor = scale(d[column]),
-            textColor = getTextColor(selectedColor),
+            textColor = alamode.getTextColor(selectedColor),
             cell = $(selector);
 
         if (colorText) { cell.css("color",selectedColor); } else { cell.css( {"background":selectedColor,"color":textColor} ); }
@@ -2854,7 +2881,7 @@ var alamode = {
     function drawThreshold(column, type, threshold, color, colorText) {
 
       var idx = colIndex[column];
-      var textColor = getTextColor(color);
+      var textColor = alamode.getTextColor(color);
 
       data.forEach(function(d,i) {
         var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
@@ -2868,32 +2895,6 @@ var alamode = {
           if (colorText) { cell.css("color",color); } else { cell.css( {"background":color,"color":textColor} ); }
         }
       })
-    }
-
-    function hexToRgb(hex) {
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-      } : null;
-    }
-
-    function getTextColor(hex) {
-      var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
-
-      if (isHex) {
-        rgb = hexToRgb(hex);
-        o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
-      } else {
-        o = 255;
-      }
-
-      if (o > 125) {
-        return "#2B2B2B";
-      } else {
-        return "#FCFCFC";
-      }
     }
   },
 
@@ -2972,7 +2973,7 @@ var alamode = {
 
           var selector = tableId + " table [data-axel-rowkey='" + i + "'][data-axel-column='" + idx + "']",
               selectedColor = scale(d[c]),
-              textColor = getTextColor(selectedColor),
+              textColor = alamode.getTextColor(selectedColor),
               cell = $(selector);
 
           if (colorText) { cell.css("color",selectedColor); } else { cell.css( {"background":selectedColor,"color":textColor} ); }
@@ -2982,7 +2983,7 @@ var alamode = {
 
     function drawThreshold(type, threshold, color, colorText) {
 
-      var textColor = getTextColor(color);
+      var textColor = alamode.getTextColor(color);
 
       data.forEach(function(d,i) {
         includedColumns.forEach(function(c) {
@@ -3002,32 +3003,6 @@ var alamode = {
 
         })
       })
-    }
-
-    function hexToRgb(hex) {
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-      } : null;
-    }
-
-    function getTextColor(hex) {
-      var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
-
-      if (isHex) {
-        rgb = hexToRgb(hex);
-        o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
-      } else {
-        o = 255;
-      }
-
-      if (o > 125) {
-        return "#2B2B2B";
-      } else {
-        return "#FCFCFC";
-      }
     }
   },
 
