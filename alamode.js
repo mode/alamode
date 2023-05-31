@@ -6,6 +6,9 @@ var version = "0.23";
 var alamode = {
 
   reportError: function(msg) {
+    if (typeof modeReportAlamodeError === "function") {
+      modeReportAlamodeError(new Error(msg));
+    }
     $("<h1 class='mode-error'>").text(msg).prependTo(document.body);
   },
 
