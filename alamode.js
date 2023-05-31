@@ -133,6 +133,81 @@ var alamode = {
     }
   },
 
+  addLinksToQuickTables: function(o) {
+    var tableId = "#" + o["table_id"],
+        linkColumns = o["link_columns"],
+        linkURLs = o["link_urls"],
+        queryName = o["query_name"],
+        openInNewTab = o["open_in_new_tab"] || false;
+
+    var linkFormat = [];
+    var colIndex = {};
+    
+    linkColumns.forEach(function(l,i) {
+      linkFormat.push( { column: l, link_string: linkURLs[i] });
+    })
+
+    var data = alamode.getDataFromQuery(queryName),
+        columns = alamode.getColumnsFromQuery(queryName);
+
+    setTimeout(function(){
+      drawLinks(linkFormat)
+    },1000)
+
+    $(tableId).mousemove(function() {
+      drawLinks(linkFormat)
+    })
+
+    function drawLinks(linkFormat) {
+
+      var tableDiv = $(tableId),
+        tableHeader = $(tableId + " .ag-header-container .ag-header-row.ag-header-row-column"),
+        headers = $(tableHeader).find($(tableId + " .ag-header-container .ag-header-cell")),
+        rows = tableDiv.find(".ag-center-cols-container .ag-row"),
+        columnIndex = 0;
+
+      headers.each(function() {
+        text = $(this).find(".ag-header-cell-text").text()
+        columnIndex = $(this).find(".ag-header-cell-text").attr("aria-colindex")
+        colIndex[text] = columnIndex
+      })
+
+      rows.each(function(i) {
+        if (i >= 0 && i <= data.length) {
+          var cells = $(this).find(".ag-cell-value.ag-cell"),
+            rowKey = $(this).attr("row-index");
+
+          linkFormat.forEach(function(l) {
+            var columnToShow = colIndex[l.column],
+              cellContent = cells.filter(function() {
+                return columnToShow && $(this).attr("aria-colindex") == columnToShow
+              }).text(),
+              url = l.link_string;
+
+            while (url.indexOf("{{") != -1) {
+              var chars = url.length,
+                start = url.indexOf("{{"),
+                end = url.substring(start + 2, chars).indexOf("}}"),
+                cName = url.substring(start + 2, start + end + 2),
+                full = url.substring(start, start + end + 4),
+                col = colIndex[cName],
+                content = data[rowKey][cName];
+
+              url = url.replace(full, content);
+            }
+
+            var target = (openInNewTab) ? "_blank" : "_top";
+            var link_html = "<a target='" + target + "' href='" + encodeURI(url) + "'>" + cellContent + "</a>";
+
+            cells.filter(function() {
+              return columnToShow && $(this).attr("aria-colindex") == columnToShow
+            }).html(link_html);
+          })
+        }
+      })
+    }
+  },
+
   customChartColors: function(o) {
     var charts = o["charts"],
         colors = o["colors"],
