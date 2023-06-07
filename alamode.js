@@ -3034,6 +3034,78 @@ var alamode = {
     }
   },
 
+  conditionalFormattingBigNumber: function(o) {
+    var chartId = "#" + o["chart_id"],
+        queryName = o["query_name"],
+        columnName = o["column_name"],
+        rules = o["rules"];
+
+    var content = alamode.getDataFromQuery(queryName)
+    var bigNumber = content[0][columnName]
+
+    setTimeout(function(){
+      shade(chartId, bigNumber, rules)
+    },1000)
+
+    $(chartId).mousemove(function() {
+      shade(chartId, bigNumber, rules)
+    })
+
+    function shade(chartId, bigNumber, rules) {
+      rules.forEach(function(r) {
+          var colorText = r.shade_text || false;
+          drawThreshold(chartId, bigNumber, r.type, r.value, r.color, colorText);
+      })
+    }
+
+    function drawThreshold(chartId, bigNumber, type, threshold, color, colorText) {
+      var textColor = getTextColor(color);
+      var bigNumberCell = $(chartId).find('.chart-big-number').parent();
+
+      if (type == "above" && bigNumber >= threshold){
+        colorCell(bigNumberCell, color, colorText, textColor);
+      } else if (type == "below" && bigNumber <= threshold) {
+        colorCell(bigNumberCell, color, colorText, textColor);
+      } else if (type == "equal" && bigNumber == threshold) {
+        colorCell(bigNumberCell, color, colorText, textColor);
+      }
+    }
+
+    function colorCell(cell, color, colorText, textColor) {
+      if (colorText) {
+        cell.css("color", color);
+      } else {
+        cell.css( {"background":color, "color":textColor} );
+      }
+    }
+
+    function getTextColor(hex) {
+      var isHex = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
+
+      if (isHex) {
+        rgb = hexToRgb(hex);
+        o = Math.round(((parseInt(rgb.r) * 299) + (parseInt(rgb.g) * 587) + (parseInt(rgb.b) * 114)) /1000);
+      } else {
+        o = 255;
+      }
+
+      if (o > 125) {
+        return "#2B2B2B";
+      } else {
+        return "#FCFCFC";
+      }
+    }
+
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+  },
+
   addTableOfContents: function(o){
 
     if (typeof(o) === 'undefined'){
